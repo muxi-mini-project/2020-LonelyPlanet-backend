@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/kocoler/GoExercises/miniProject/model"
-	"github.com/kocoler/GoExercises/miniProject/router"
+	"github.com/hly/miniProject/model"
+	"github.com/hly/miniProject/router"
 	"log"
 )
 

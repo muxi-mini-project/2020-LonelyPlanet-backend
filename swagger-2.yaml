@@ -133,6 +133,60 @@ paths:
     #    - petstore_auth:
      #       - 'write:pets'
       #      - 'read:pets'
+  /day/requirement/view/:
+    get:
+      tags:
+        - day
+      summary: 查看需求
+      description: Get requirement 
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+        - name: requirementId
+          in: query
+          required: true
+          type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              title:
+                type: string
+              content:
+                type: string
+              postTime:
+                type: string
+              date:
+                type: string
+              timeForm:
+                  type: integer
+              timeEnd:
+                  type: integer
+              type:
+                  type: integer
+              requiremPeopleNum:
+                  type: integer
+              place:
+                  type: integer
+              tag: 
+                  type: integer
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
       
   /night/secret/history:
     get:
@@ -350,6 +404,38 @@ paths:
             properties:
               msg:
                 type: string
+                
+  /day/requirement/applyment/:
+    post:
+      tags:
+        - day
+      summary: 申请 
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+        - name: requirementId
+          type: string
+          in: query
+          required: true
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
 
   /day/message/confirm/:
     get:
@@ -426,8 +512,6 @@ paths:
                 type: string
               Gender:
                 type: integer
-              PersonalizedSignature:
-                type: string
               ContactWay:
                 type: string
         401:
