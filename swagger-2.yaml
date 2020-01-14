@@ -1,0 +1,1017 @@
+swagger: '2.0'
+
+info:
+  description: the server API of the Homeworks
+  version: 1.0.0
+  title: server API
+    
+host: 47.102.120.167:2333
+basePath: /api
+tags:
+  - name: user
+    description: user
+  - name: day
+    description: day
+  - name: night
+    description: night
+
+ 
+    
+schemes:
+  - https
+  - http
+  
+paths:
+  /user/login/:
+    post:
+      tags:
+        - user
+      summary: 登录
+      description: login for account
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: data
+          in: body
+          description: post data
+          schema:
+            required:
+              - Sid
+              - Password
+            properties:
+              Sid:
+                type: string
+                description: 学号
+              Password:
+                type: string
+                description: 密码
+      responses:
+        200:
+          description: 登录成功
+          schema:
+            type: object
+            required:
+              - token
+            properties:
+              token:
+                type: string
+              msg:
+                type: string
+                description: 登录结果信息
+        401:
+          description: 用户名或密码错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+   #   security:
+    #    - petstore_auth:
+     #       - 'write:pets'
+      #      - 'read:pets'
+      
+  /day/requirement/history:
+    get:
+      tags:
+        - day
+      summary: 历史发布需求
+      description: Get requirement history
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              history:
+                type: array
+                items:
+                  properties:
+                    requirementsId :
+                      type: string  #不显示
+                    title:
+                      type: string
+                    content:
+                      type: string
+                    postTime:
+                      type: string
+                    date:
+                      type: string
+                    timeForm:
+                      type: integer
+                    timeEnd:
+                      type: integer
+                    type:
+                      type: integer
+                    requiremPeopleNum:
+                      type: integer
+                    place:
+                      type: integer
+                    tag: 
+                      type: integer
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+            
+   #   security:
+    #    - petstore_auth:
+     #       - 'write:pets'
+      #      - 'read:pets'
+      
+  /night/secret/history:
+    get:
+      tags:
+        - night
+      summary: 历史发布秘密 
+      description: get history of secrets
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string 
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              history:
+                type: array
+                items:
+                  properties:
+                    secretId :
+                      type: string  #不显示
+                    content:
+                      type: string
+                    sendTime:
+                      type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+                
+  /night/coment/history:
+    get:
+      tags:
+        - night
+      summary: 历史评论 
+      description: get history of comments
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string 
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              history:
+                type: array
+                items:
+                  properties:
+                    commentId :
+                      type: string  #不显示
+                    content:
+                      type: string
+                    sendTime:
+                      type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string  
+  
+    
+  /day/remind/infomation:
+    get:
+      tags:
+        - day
+      summary: 获取白天收到的对方的信息
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              data:
+                type: array
+                items:
+                  properties:
+                    title:
+                      type: string
+                    nickname:
+                      type: string
+                    gender:
+                      type: integer
+                    college:
+                      type: string
+        400:
+          description: 参数不全
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+  
+  /day/reminds:
+    get:
+      tags:
+        - day
+      summary: 获取白天收到的消息提醒
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              data:
+                type: array
+                items:
+                  properties:
+                    title:
+                      type: string
+                    type:
+                      type: string
+                    nickname:
+                      type: string
+                    sendtime:
+                      type: string
+        400:
+          description: 参数不全
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+  
+  /day/message/confine:
+    post:
+      tags:
+        - day
+      summary: 确认是否接受申请 
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+        - name: requirementsId
+          type: string
+          in: query
+          required: true
+        - name: status
+          type: integer
+          in: query
+          required: true
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+
+  /day/message/confirm/:
+    get:
+      tags:
+        - day
+      summary: 收到的申请 
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              title:
+                type: string
+              content:
+                type: string
+              requirementTime:
+                type: string
+              timeForm:
+                type: integer
+              timeEnd:
+                type: integer
+              type:
+                type: integer
+              requiremPeopleNum:
+                type: integer
+              place:
+                type: integer
+              tag: 
+                type: integer
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+
+  /user/homepage/:
+    get:
+      tags:
+        - user
+      summary: 获取个人信息
+      description: user's information
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              Sid:
+                type: string
+              Nickname:
+                type: string
+              College:
+                type: string
+              Gender:
+                type: integer
+              PersonalizedSignature:
+                type: string
+              ContactWay:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+                
+  /night/remind/exist/:
+    get:
+      tags:
+        - night
+      summary: 黑夜是否存在未读消息提醒    
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+      responses:
+        200:
+          description: success
+          schema:
+            properties:
+              msg:
+                type: string
+              existence:
+                type: boolean
+        400:
+          description: 参数不全
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+                      
+  /night/remind/content:
+    get:
+      tags:
+        - night
+      summary: 获取黑夜消息提醒 
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              commentdata:
+                type: array
+                items:
+                  properties:
+                    commentTime:
+                      type: string
+                    comment:
+                      type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+            
+  /user/changeInfo/:
+    post :
+      tags:
+        - user
+      summary: 修改个人信息
+      description: change users' information
+      consumes: 
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+        - name: data
+          in: body
+          schema:
+            required:
+              - VerifyItem
+              - VerifyInfo
+            properties:
+              VerifyItem:
+                type: string
+              VerifyInfo:
+                type: string
+      responses:
+        200:
+          description: change successfully
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        400:
+          description: 修改失败
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+                
+  /night/secret/create:
+    post:
+      tags:
+        - night
+      summary: 发布秘密
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+        - name: data
+          in: body
+          schema:
+            required:
+              - content
+              - sendTime
+            properties:
+              colour:
+                type: string
+              content:
+                type: string
+              sendTime:
+                type: string
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              secretId:
+                type: integer
+        400:
+          description: 发布失败 
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+
+
+  /night/comment/create:
+    post:
+      tags:
+        - night
+      summary: 发布评论 
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+        - name: data
+          in: body
+          schema:
+            required:
+              - senderSid
+              - commentTime
+              - content
+              - secretId
+            properties:
+              senderSid:
+                type: string
+              commentTime:
+                type: integer
+              comment:
+                type: string
+              secretId:
+                type: integer
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        400:
+          description: 请求错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+                
+  
+  /night/secret:
+    delete:
+      tags:
+        - night
+      summary: 删除秘密
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+        - name: secretId
+          in: query
+          required: true
+          type: string      
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+
+        400:
+          description: 请求错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        404:
+          description: 未找到
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+ 
+  /night/comment:
+    delete:
+      tags:
+        - night
+      summary: 删除评论
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+        - name: commentId
+          in: query
+          required: true
+          type: string      
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+
+        400:
+          description: 请求错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        404:
+          description: 未找到
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+ 
+  /day/requirement/create:
+    post:
+      tags:
+        - day
+      summary: 添加需求 
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+        - name: data
+          in: body
+          schema:
+            required:
+              #- senderSid
+              - title
+              - content
+              - date
+              - timeForm
+              - timeEnd
+              - type
+              - requirePeopleNum
+              - place
+              - tag
+            properties:
+              #senderSid:
+               # type: string
+              title:
+                type: string
+              content:
+                type: string
+              date:
+                type: string
+              timeForm:
+                type: integer
+              timeEnd:
+                type: integer
+              type:
+                type: integer
+              requiremPeopleNum:
+                type: integer
+              place:
+                type: integer
+              tag: 
+                type: integer
+                description: 类别 
+      responses:
+        200:
+          description: 发布需求成功 
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        400:
+          description: 发布错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+
+
+  /day/remind/exist:
+    get:
+      tags:
+        - day
+      summary: 白天是否存在未读消息提醒
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string        
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              exsitence:
+                type: boolean
+        400:
+          description: 请求错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+       
+                
+  /day/requirementsSquare:
+    get:
+      tags:
+        - day
+      summary: 请求筛选
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+        - name: type       
+          in: query
+          required: true
+          type: string
+          #eg:“学习”,初始页面即为请求筛选”学习“项，即为１，其余项用户没有选取筛选条件的可以不提交
+        - name: space
+          in: query
+          type: string
+        - name: dataTime
+          in: query
+          type: string
+        - name: timeForm
+          in: query
+          type: integer
+        - name: tag
+          in: query
+          type: string
+          #eg:""
+        
+      responses:
+        200:
+          description: 成功 
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              data:
+                type: array
+                items:
+                  properties:
+                    title:
+                      type: string
+                    content:
+                      type: string
+                    equirementTime:
+                      type: string
+                    timeForm:
+                      type: integer
+                    timeEnd:
+                      type: integer
+                    type:
+                      type: integer
+                    requiremPeopleNum:
+                      type: integer
+                    place:
+                      type: integer
+                    tag: 
+                      type: integer
+                
+        400:
+          description: 请求错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+
+  /day/requirements:
+    delete:
+      tags:
+        - day
+      summary: 删除需求
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+        - name: requirementsId
+          in: query
+          required: true
+          type: string      
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              statusMessage:
+                type: string
+
+        400:
+          description: 请求错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        404:
+          description: 未找到
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+
+ 
+                
+  /night:
+    get:
+      tags:
+        - night
+      summary: 别人发布秘密 
+      description: secrets
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string 
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              history:
+                type: array
+                items:
+                  properties:
+                    secretId :
+                      type: string  #不显示
+                    content:
+                      type: string
+                    sendTime:
+                      type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
