@@ -9,7 +9,7 @@ create table users
 	sid varchar(50) not null,
 	nike_name varchar(50) null,
 	college varchar(50) null,
-	gender int null,
+	gender varchar(20) null,
 	grade varchar(20) null,
 	requirements int null,
 	debunks int null,
