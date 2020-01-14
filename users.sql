@@ -1,6 +1,6 @@
 drop database if exists `mini_project`
 
-create databases `mini_project`
+create database `mini_project`
 
 use `mini_project`
 
