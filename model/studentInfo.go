@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-type AccountReqeustParams struct {
+type accountReqeustParams struct {
 	lt         string
 	execution  string
 	_eventId   string
@@ -47,7 +47,7 @@ type SuInfo struct {
 
 func GetUserInfoFormOne(sid string, pwd string) (SuInfo, error) {
 	var suInfo SuInfo
-	params,err := MakeAccountPreflightRequest()
+	params,err := makeAccountPreflightRequest()
 	if err != nil {
 		log.Println(err)
 		return suInfo,err
@@ -63,7 +63,7 @@ func GetUserInfoFormOne(sid string, pwd string) (SuInfo, error) {
 		Jar:     jar,
 	}
 	//fmt.Println(params)
-	err = MakeAccountRequest( sid, pwd, params, &client)
+	err = makeAccountRequest( sid, pwd, params, &client)
 	//err := MakeAccountRequest( "", "", params, &client)
 	if err != nil {
 		log.Println(err)
@@ -78,7 +78,7 @@ func GetUserInfoFormOne(sid string, pwd string) (SuInfo, error) {
 	//fmt.Println(pt)
 	pt = "Bearer " + pt
 	//fmt.Println(pt)
-	suInfo = GetInfo(pt)
+	suInfo = getInfo(pt)
 	//fmt.Println(suInfo)
 	return suInfo, nil
 }
@@ -114,13 +114,13 @@ func MakeONERequest(client *http.Client) (portal_token string, err error) {
 }
 
 // 预处理，打开 account.ccnu.edu.cn 获取模拟登陆需要的表单字段
-func MakeAccountPreflightRequest() (*AccountReqeustParams, error) {
+func makeAccountPreflightRequest() (*accountReqeustParams, error) {
 	var JSESSIONID string
 	var lt string
 	var execution string
 	var _eventId string
 
-	params := &AccountReqeustParams{}
+	params := &accountReqeustParams{}
 
 	// 初始化 http client
 	client := http.Client{
@@ -203,7 +203,7 @@ func MakeAccountPreflightRequest() (*AccountReqeustParams, error) {
 	return params, nil
 }
 
-func MakeAccountRequest(sid, password string, params *AccountReqeustParams, client *http.Client) error {
+func makeAccountRequest(sid, password string, params *accountReqeustParams, client *http.Client) error {
 	v := url.Values{}
 	v.Set("username", sid)
 	v.Set("password", password)
@@ -241,7 +241,7 @@ func MakeAccountRequest(sid, password string, params *AccountReqeustParams, clie
 	return nil
 }
 
-func GetInfo(pt string) SuInfo {
+func getInfo(pt string) SuInfo {
 	client1 := http.Client{}
 	v := url.Values{}
 

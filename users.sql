@@ -13,6 +13,7 @@ create table users
 	grade varchar(20) null,
 	requirements int null,
 	debunks int null,
+    night_portrait int null;
 	constraint sid_pk
 		primary key (sid)
 )DEFAULT CHARSET=UTF8MB4;

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/hly/miniProject/model"
-	"github.com/hly/miniProject/router"
+	"github.com/2020-LonelyPlanet-backend/miniProject/model"
+	"github.com/2020-LonelyPlanet-backend/miniProject/router"
 	"log"
 )
 
@@ -14,8 +14,4 @@ func main() {
 		log.Print("路由错误")
 		log.Fatal(err)
 	}
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> d3ce8f162ae41d571dab45e986131f21981720f3

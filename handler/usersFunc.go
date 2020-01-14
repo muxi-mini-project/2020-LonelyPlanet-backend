@@ -2,31 +2,23 @@ package handler
 
 import (
 	"fmt"
+	"github.com/2020-LonelyPlanet-backend/miniProject/model"
 	"github.com/gin-gonic/gin"
 	"github.com/kocoler/GoExercises/miniProject/middleware"
-	"github.com/kocoler/GoExercises/miniProject/model"
+	log "github.com/sirupsen/logrus"
 	"math/rand"
 	"time"
 )
 
-type UserInfo struct {
-	Sid string `json:"-" gorm:"sid"`
-	NickName string `json:"nick_name" gorm:"nick_name"`
-	College string `json:"college" gorm:"college"`
-	Gender string `json:"gender" gorm:"gender"`
-	PersonalizedSignature string `json:"personalized_signature" gorm:"personalized_signature"`
-	ContactWay string `json:"contact_way" gorm:"contact_way"`
-}
-
-type LoginInfo struct {
-	Sid string `json:"sid"`
-	Pwd string `json:"pwd"`
+type verifyInfo struct {
+	VerifyItem string `json:"verify_item"`
+	VerifyInfo string `json:"verify_info"`
 }
 
 func UserLogin(c *gin.Context) {
 	//a, _ := c.Get("token2")
 	var tmpUser model.SuInfo
-	var tmpLoginInfo LoginInfo
+	var tmpLoginInfo model.LoginInfo
 	if err := c.BindJSON(&tmpLoginInfo); err != nil {
 		c.JSON(400,gin.H{
 			"message":"Bad Request!",
@@ -42,19 +34,25 @@ func UserLogin(c *gin.Context) {
 	}
 	fmt.Print(tmpUser)
 
-	user := UserInfo{
+	user := model.UserInfo{
 		Sid:                   tmpUser.User.Usernumber,
 		NickName:              getRandomString(8),
 		College:               tmpUser.User.DeptName,
 		Gender:                getGender(tmpUser.User.Xb),
-		PersonalizedSignature: "",
-		ContactWay:            "",
+		Grade:                 model.ChangeString(tmpUser.User.Usernumber,1,4),
+		NightPortrait:         "",
+		Requirements:          0,
+		Debunks:               0,
 	}
 
+	err = model.CreatUser(user)
+	if err != nil {
+		c.JSON(400,gin.H{
+			"message":err,
+		})
+		return
+	}
 	//写入用户数据到数据库
-
-	fmt.Println(user)
-
 	c.Header("token",middleware.ProduceToken(user.Sid))
 }
 
@@ -80,4 +78,47 @@ func  getRandomString(l int) string {
 		result = append(result, bytes[r.Intn(len(bytes))])
 	}
 	return string(result)
+}
+
+func Homepage(c *gin.Context) {
+	uid := c.GetString("uid")
+	tmpUser, err := model.FindUser(uid)
+	if err != nil {
+		log.Println(err)
+		c.JSON(400,gin.H{
+			"message":err,
+		})
+		return
+	}
+	c.JSON(200,gin.H{
+		"msg":"Success",
+		"Sid":tmpUser.Sid,
+		"NickName":tmpUser.NickName,
+		"College":tmpUser.College,
+		"Gender":tmpUser.Gender,
+		"Grade":tmpUser.Grade,
+	})
+}
+
+func ChangeInfo(c *gin.Context) {
+	uid := c.GetString("uid")
+	var tmpInfo verifyInfo
+	if err := c.BindJSON(&tmpInfo); err != nil {
+		log.Println(err)
+		c.JSON(400,gin.H{
+			"message":"Bad Request!",
+		})
+		return
+	}
+	err := model.VerifyInfo(uid,tmpInfo.VerifyItem,tmpInfo.VerifyInfo)
+	if err != nil {
+		log.Println(err)
+		c.JSON(400,gin.H{
+			"message":err,
+		})
+		return
+	}
+	c.JSON(200,gin.H{
+		"msg":"Success",
+	})
 }
