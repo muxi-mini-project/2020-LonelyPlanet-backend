@@ -3,17 +3,23 @@ swagger: '2.0'
 info:
   description: the server API of the Homeworks
   version: 1.0.0
-  title: server API
+  title: lonely planet API
     
 host: 47.102.120.167:2333
 basePath: /api
 tags:
   - name: user
     description: user
-  - name: day
-    description: day
-  - name: night
-    description: night
+  - name: secret
+    description: secret
+  - name: comment
+    description: comment
+  - name: requirement
+    description: requirement
+  - name: remind
+    description: remind
+  - name: message
+    description: message 
 
  
     
@@ -69,10 +75,10 @@ paths:
                 type: string
 
       
-  /day/requirement/history/:
+  /requirement/history/:
     get:
       tags:
-        - day
+        - requirement
       summary: 历史发布需求
       description: Get requirement history
       consumes:
@@ -127,10 +133,10 @@ paths:
                 type: string
             
 
-  /day/requirement/view/:
+  /requirement/id/view/:
     get:
       tags:
-        - day
+        - requirement
       summary: 查看需求
       description: Get requirement 
       consumes:
@@ -142,7 +148,7 @@ paths:
           in: header
           required: true
           type: string
-        - name: requirementId
+        - name: requirement_id
           in: query
           required: true
           type: string
@@ -182,10 +188,10 @@ paths:
               msg:
                 type: string
       
-  /night/secret/history/:
+  /secret/history/:
     get:
       tags:
-        - night
+        - secret
       summary: 历史发布秘密 
       description: get history of secrets
       consumes:
@@ -223,11 +229,11 @@ paths:
               msg:
                 type: string
                 
-  /night/coment/history/:
+  /comment/history/:
     get:
       tags:
-        - night
-      summary: 历史评论 
+        - comment
+      summary: 查看秘密的评论 
       description: get history of comments
       consumes:
         - application/json
@@ -265,11 +271,11 @@ paths:
                 type: string  
   
     
-  /day/remind/infomation/:
+  /remind/day/infomation/:
     get:
       tags:
-        - day
-      summary: 获取白天收到的对方的信息
+        - remind
+      summary: 获取白天的回复提醒 
       consumes:
         - application/json
       produces:
@@ -314,11 +320,11 @@ paths:
               msg:
                 type: string
   
-  /day/remind/:
+  /remind/day/:
     get:
       tags:
-        - day
-      summary: 获取白天收到的消息提醒
+        - remind
+      summary: 获取白天的申请提醒
       consumes:
         - application/json
       produces:
@@ -363,10 +369,10 @@ paths:
               msg:
                 type: string
   
-  /day/message/confine/:
+  /message/confirm/:
     post:
       tags:
-        - day
+        - message
       summary: 确认是否接受申请 
       produces:
         - application/json
@@ -375,7 +381,7 @@ paths:
           in: header
           required: true
           type: string
-        - name: requirementsId
+        - name: requirement_id
           type: string
           in: query
           required: true
@@ -399,11 +405,11 @@ paths:
               msg:
                 type: string
                 
-  /day/requirement/applyment/:
+  /requirement/id/applyment/:
     post:
       tags:
-        - day
-      summary: 申请 
+        - requirement
+      summary: 申请他人的需求  
       produces:
         - application/json
       parameters:
@@ -411,7 +417,7 @@ paths:
           in: header
           required: true
           type: string
-        - name: requirementId
+        - name: requirement_id
           type: string
           in: query
           required: true
@@ -431,11 +437,11 @@ paths:
               msg:
                 type: string
 
-  /day/message/confirm/:
+  /message/content/:
     get:
       tags:
-        - day
-      summary: 收到的申请 
+        - message
+      summary: 收到的申请提醒和回复提醒的详情页  
       produces:
         - application/json
       parameters:
@@ -523,10 +529,10 @@ paths:
               msg:
                 type: string
                 
-  /night/remind/unread/:
+  /remind/night/unread/:
     get:
       tags:
-        - night
+        - remind
       summary: 黑夜是否存在未读消息提醒    
       parameters:
         - name: token
@@ -557,10 +563,10 @@ paths:
               msg:
                 type: string
                       
-  /night/remind/:
+  /remind/night/:
     get:
       tags:
-        - night
+        - remind
       summary: 获取黑夜消息提醒 
       parameters:
         - name: token
@@ -591,8 +597,8 @@ paths:
               msg:
                 type: string
             
-  /user/changeInfo/:
-    post :
+  /user/info/change/:
+    put:
       tags:
         - user
       summary: 修改个人信息
@@ -640,10 +646,10 @@ paths:
               msg:
                 type: string
                 
-  /night/secret/create/:
+  /secret/create/:
     post:
       tags:
-        - night
+        - secret
       summary: 发布秘密
       parameters:
         - name: token
@@ -689,10 +695,10 @@ paths:
                 type: string
 
 
-  /night/comment/create/:
+  /comment/create/:
     post:
       tags:
-        - night
+        - comment
       summary: 发布评论 
       parameters:
         - name: token
@@ -740,10 +746,10 @@ paths:
                 type: string
                 
   
-  /night/secret/:
+  /secret/delete/:
     delete:
       tags:
-        - night
+        - secret
       summary: 删除秘密
       parameters:
         - name: token
@@ -785,17 +791,17 @@ paths:
               msg:
                 type: string
  
-  /night/comment/:
+  /comment/id/delete/:
     delete:
       tags:
-        - night
+        - comment
       summary: 删除评论
       parameters:
         - name: token
           in: header
           required: true
           type: string
-        - name: commentId
+        - name: comment_id
           in: query
           required: true
           type: string      
@@ -830,10 +836,10 @@ paths:
               msg:
                 type: string
  
-  /day/requirement/create/:
+  /requirement/create/:
     post:
       tags:
-        - day
+        - requirement
       summary: 添加需求 
       parameters:
         - name: token
@@ -900,10 +906,10 @@ paths:
                 type: string
 
 
-  /day/remind/unread/:
+  /remind/day/unread/:
     get:
       tags:
-        - day
+        - remind
       summary: 白天是否存在未读消息提醒
       parameters:
         - name: token
@@ -936,10 +942,10 @@ paths:
                 type: string
        
                 
-  /day/requirementsSquare/:
+  /requirement/square/:
     get:
       tags:
-        - day
+        - requirement
       summary: 请求筛选
       parameters:
         - name: token
@@ -1011,17 +1017,17 @@ paths:
               msg:
                 type: string
 
-  /day/requirements/:
+  /requirement/id/delete/:
     delete:
       tags:
-        - day
+        - requirement
       summary: 删除需求
       parameters:
         - name: token
           in: header
           required: true
           type: string
-        - name: requirementsId
+        - name: requirement_id
           in: query
           required: true
           type: string      
@@ -1059,11 +1065,11 @@ paths:
                 type: string
 
             #别人发布的秘密           
-  /night/:
+  /secret/square/:
     get:
       tags:
-        - night
-      summary: 黑夜广场　
+        - secret
+      summary: 黑夜广场(请求秘密)　
       description: secrets
       consumes:
         - application/json
@@ -1105,11 +1111,11 @@ paths:
               msg:
                 type: string
                 
-  /night/secret/content/:
+  /secret/content/:
     get:
       tags:
-        - night
-      summary: 秘密相关信息　
+        - secret
+      summary: 秘密详情 　
       description: secrets
       consumes:
         - application/json
