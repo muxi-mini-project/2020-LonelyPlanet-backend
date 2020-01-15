@@ -76,31 +76,36 @@ create index debunk_id_index on night_comments(debunk_id);
 
 create table reminders
 (
-	remind_sid int auto_increment,
+	remind_id int auto_increment,
+    remind_info_id int null comment"根据提醒来源内容的id来回溯内容",
 	receiver_sid varchar(100) null,
 	type tinyint null comment"黑天提醒或者白天提醒",
+    read_status tinyint null comment"是否已读",
+    type1 tinyint null comment"提醒内容的类型：１：收到申请，２：收到别人信息，３：收到别人确认的回复",
+    title varchar(100) null comment"显示的标题",
 	constraint reminders_pk
-		primary key (remind_sid)
+		primary key (remind_id)
 );
 
 create index receiver_sid_index on reminders(receiver_sid); 
-create index type_index on reminders(type);
 
-create table day_applications
+create table applications
 (
 	application_id int not null,
 	receiver_sid int null,
 	sender_sid int null,
 	requirements_id int null,
-	confirm tinyint null,
-	constraint day_applications_pk
+	confirm tinyint null comment"１：未确认，２：接受，３：拒绝",
+    contact_way_type varchar(10) null,
+    contact_way varchar(50) null,
+	constraint applications_pk
 		primary key (application_id)
 );
 
-create index application_id_index on day_applications(application_id);
-create index receiver_sid_index on day_applications(receiver_sid);
-create index sender_sid_index on day_applications(sender_sid);
-create index requirements_id_index on day_applications(requirements_id);
+create index application_id_index on applications(application_id);
+create index receiver_sid_index on applications(receiver_sid);
+create index sender_sid_index on applications(sender_sid);
+create index requirements_id_index on applications(requirements_id);
 
 
 
