@@ -1,7 +1,7 @@
 swagger: '2.0'
 
 info:
-  description: the server API of the Homeworks
+  description: the server API of the lonly plant
   version: 1.0.0
   title: lonely planet API
     
@@ -18,10 +18,10 @@ tags:
     description: requirement
   - name: remind
     description: remind
-  - name: message
-    description: message 
-
- 
+  - name: infomation
+    description: 收到的对方的信息
+  - name: application
+    description: application
     
 schemes:
   - https
@@ -188,6 +188,63 @@ paths:
               msg:
                 type: string
       
+  /infomation/view/:
+    get:
+      tags:
+        - infomation
+      summary: 查看获取到的他人信息
+      description: Get requirement 
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              num:
+                type: integer
+              infomations:
+                type: array
+                items:
+                  properties:
+                    student_id :
+                      type: string  #不显示
+                    source:
+                      type: string
+                    sendTime:
+                      type: string
+                    nickname:
+                      type: string
+                    contact_way_type:
+                      type: string
+                    contact_way:
+                      type: string
+        400:
+          description: 请求错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+                
+                
   /secret/history/:
     get:
       tags:
@@ -369,11 +426,11 @@ paths:
               msg:
                 type: string
   
-  /message/confirm/:
+  /application/solve/{application_id}/:
     post:
       tags:
-        - message
-      summary: 确认是否接受申请 
+        - application
+      summary: 处理申请 
       produces:
         - application/json
       parameters:
@@ -381,9 +438,9 @@ paths:
           in: header
           required: true
           type: string
-        - name: requirement_id
-          type: string
-          in: query
+        - name: application_id
+          type: integer
+          in: path
           required: true
         - name: status
           type: integer
@@ -429,52 +486,6 @@ paths:
             properties:
               msg:
                 type: string
-        401:
-          description: 身份认证错误
-          schema:
-            type: object
-            properties:
-              msg:
-                type: string
-
-  /message/content/:
-    get:
-      tags:
-        - message
-      summary: 收到的申请提醒和回复提醒的详情页  
-      produces:
-        - application/json
-      parameters:
-        - name: token
-          in: header
-          required: true
-          type: string
-      responses:
-        '200':
-          description: successful operation
-          schema:
-            type: object
-            properties:
-              msg:
-                type: string
-              title:
-                type: string
-              content:
-                type: string
-              requirementTime:
-                type: string
-              timeForm:
-                type: integer
-              timeEnd:
-                type: integer
-              type:
-                type: integer
-              requiremPeopleNum:
-                type: integer
-              place:
-                type: integer
-              tag: 
-                type: integer
         401:
           description: 身份认证错误
           schema:
@@ -529,7 +540,7 @@ paths:
               msg:
                 type: string
                 
-  /remind/night/unread/:
+  /remind/night/remindbox/:
     get:
       tags:
         - remind
@@ -563,11 +574,11 @@ paths:
               msg:
                 type: string
                       
-  /remind/night/:
+  /remind/night/remindbox/view/:
     get:
       tags:
         - remind
-      summary: 获取黑夜消息提醒 
+      summary: 查看所有黑夜消息提醒 
       parameters:
         - name: token
           in: header
@@ -585,10 +596,12 @@ paths:
                 type: array
                 items:
                   properties:
-                    commentTime:
+                    comment_time:
                       type: string
                     comment:
                       type: string
+                    secret_id:
+                      type: integer
         401:
           description: 身份认证错误
           schema:
@@ -906,7 +919,7 @@ paths:
                 type: string
 
 
-  /remind/day/unread/:
+  /remind/day/remindbox/:
     get:
       tags:
         - remind
@@ -940,7 +953,208 @@ paths:
             properties:
               msg:
                 type: string
-       
+  
+  /remind/day/remindbox/view/:
+    get:
+      tags:
+        - remind
+      summary: 查看所有白天消息提醒
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string        
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              num:
+                type: integer
+              reminds:
+                type: array
+                items:
+                  properties:
+                    title:
+                      type: string
+                    post_time:
+                      type: string
+                    type2:
+                      type: string
+                      description: "提醒的二级类型"
+        400:
+          description: 请求错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+                
+  /application/unsolve/:
+    get:
+      tags:
+        - application
+      summary: 查看所有待处理的申请
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string        
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              num:
+                type: integer
+              applications:
+                type: array
+                items:
+                  properties:
+                    title:
+                      type: string
+                    post_time:
+                      type: string
+                    nikename:
+                      type: string
+                    application_id: 
+                      type: integer
+        400:
+          description: 请求错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              
+  /application/{application_id}/:
+    get:
+      tags:
+        - application
+      summary: 查看申请
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string    
+        - name: application_id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              num:
+                type: integer
+              applications:
+                type: array
+                items:
+                  properties:
+                    title:
+                      type: string
+                    post_time:
+                      type: string
+                    nikename:
+                      type: string
+                    college:
+                      type: string
+                    gender:
+                      type: string
+                    contact_way_type:
+                      type: string
+                    contact_way:
+                      type: string
+                    application_id:
+                      type: integer
+        400:
+          description: 请求错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+                
+  /application/result/:
+    get:
+      tags:
+        - application
+      summary: 查看申请的结果
+      parameters:
+        - name: token
+          in: header
+          required: true
+          type: string    
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+              num:
+                type: integer
+              applications:
+                type: array
+                items:
+                  properties:
+                    title:
+                      type: string
+                    post_time:
+                      type: string
+                    nikename:
+                      type: string
+                    result:
+                      type: string
+                    application_id:
+                      type: integer
+        400:
+          description: 请求错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+        401:
+          description: 身份认证错误
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
+                
                 
   /requirement/square/:
     get:
@@ -956,7 +1170,7 @@ paths:
           in: query
           required: true
           type: string
-          #eg:“学习”,初始页面即为请求筛选”学习“项，即为１，其余项用户没有选取筛选条件的可以不提交
+          description: “学习”,初始页面即为请求筛选”学习“项，即为１，其余项用户没有选取筛选条件的可以不提交
         - name: space
           in: query
           type: string
@@ -969,7 +1183,7 @@ paths:
         - name: tag
           in: query
           type: string
-          #eg:""
+          description: eg:""
         
       responses:
         200:
@@ -1083,6 +1297,9 @@ paths:
         - name: page
           in: query
           type: integer
+        - name: limit
+          in: query
+          type: integer
       responses:
         200:
           description: successful operation
@@ -1096,7 +1313,7 @@ paths:
                 items:
                   properties:
                     secretId:
-                      type: string  #不显示
+                      type: string   #   不显示
                     colour:
                       type: integer
                     content:
@@ -1111,7 +1328,7 @@ paths:
               msg:
                 type: string
                 
-  /secret/content/:
+  /secret/{secret_id}:
     get:
       tags:
         - secret
@@ -1126,8 +1343,9 @@ paths:
           in: header
           required: true
           type: string 
-        - name: secretId
-          in: query
+        - name: secret_id
+          in: path
+          required: true
           type: string
       responses:
         200:
