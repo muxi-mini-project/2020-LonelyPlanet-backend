@@ -80,7 +80,7 @@ create table reminders
 	receiver_sid varchar(100) null,
 	type tinyint null comment"黑天提醒或者白天提醒",
 	constraint reminders_pk
-		primary key (remind_id)
+		primary key (remind_sid)
 );
 
 create index receiver_sid_index on reminders(receiver_sid); 
@@ -98,8 +98,8 @@ create table day_applications
 );
 
 create index application_id_index on day_applications(application_id);
-create index receiver_sid_index on day_applications(receiver_id);
-create index sender_sid_index on day_applications(sender_id);
+create index receiver_sid_index on day_applications(receiver_sid);
+create index sender_sid_index on day_applications(sender_sid);
 create index requirements_id_index on day_applications(requirements_id);
 
 
