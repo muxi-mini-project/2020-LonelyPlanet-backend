@@ -3,12 +3,14 @@ package handler
 import (
 	"github.com/2020-LonelyPlanet-backend/miniProject/model"
 	"github.com/gin-gonic/gin"
+	"log"
 	"strconv"
 )
 
 func CommentCreate(c *gin.Context) {
 	var data model.Night_comment
 	if err := c.BindJSON(&data) ; err != nil {
+		log.Println(err)
 		c.JSON(400,gin.H{
 			"message" : "Bad Request!",
 		})
@@ -16,6 +18,7 @@ func CommentCreate(c *gin.Context) {
 	}
 	err := model.CreateComment(data)
 	if err != nil {
+		log.Println(err)
 		c.JSON(400,gin.H{
 			"message" : "发布失败",
 		})
@@ -30,6 +33,7 @@ func CommentHistory(c *gin.Context) {
 	secretid,_ := strconv.Atoi(c.Param("secret_id"))
 	history,err := model.HistoryComment(secretid)
 	if err != nil {
+		log.Println(err)
 		c.JSON(400,gin.H{
 			"message" : "请求失败",
 		})
@@ -45,6 +49,7 @@ func CommentDelete(c *gin.Context) {
 	commentid,_ := strconv.Atoi(c.Query("comment_id"))
 	err := model.DeleteComment(commentid)
 	if err != nil {
+		log.Println(err)
 		c.JSON(400,gin.H{
 			"message" : "删除失败",
 		})
