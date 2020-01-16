@@ -2,9 +2,9 @@ package handler
 
 import (
 	"fmt"
+	"github.com/2020-LonelyPlanet-backend/miniProject/middleware"
 	"github.com/2020-LonelyPlanet-backend/miniProject/model"
 	"github.com/gin-gonic/gin"
-	"github.com/kocoler/GoExercises/miniProject/middleware"
 	log "github.com/sirupsen/logrus"
 	"math/rand"
 	"time"

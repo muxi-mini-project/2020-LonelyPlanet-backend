@@ -15,4 +15,7 @@ func Init() {
 	Router.GET("/test",handler.Test)
 	Router.GET("/user/info/",handler.Homepage)
 	Router.POST("/user/changeInfo/",handler.ChangeInfo)
+	Router.POST("/secret/create/",handler.DebunksCreate)
+	Router.DELETE("/secret/delete/",handler.DebunksDelete)
+	Router.GET("/secret/history/",handler.DebunksHistory)
 }
