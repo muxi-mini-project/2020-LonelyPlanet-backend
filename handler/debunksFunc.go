@@ -4,7 +4,7 @@ import (
 	"github.com/2020-LonelyPlanet-backend/miniProject/model"
 	"github.com/gin-gonic/gin"
 	"log"
-	//"strconv"
+	"strconv"
 )
 
 func DebunksCreate(c *gin.Context) {
@@ -38,7 +38,7 @@ func DebunksCreate(c *gin.Context) {
 }
 
 func DebunksDelete(c *gin.Context) {
-	secretid := c.Query("secretId")
+	secretid , _ := strconv.Atoi(c.Query("secretId"))
 	err := model.DeleteDebunk(secretid)
 	if err != nil {
 		log.Println(err)
@@ -65,6 +65,24 @@ func DebunksHistory(c *gin.Context) {
 	c.JSON(200,gin.H{
 		"message":"请求成功",
 		"history": history,
+	})
+	return
+}
+func DebunksSquare(c *gin.Context) {
+	limit := 1
+	var secret []model.Debunk
+	page, _ := strconv.Atoi(c.Query("page"))
+	secret, err := model.SquareDebunk(page, limit)
+	if err != nil {
+		log.Println(err)
+		c.JSON(400, gin.H{
+			"message": "请求错误",
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "请求成功",
+		"secrets": secret,
 	})
 	return
 }

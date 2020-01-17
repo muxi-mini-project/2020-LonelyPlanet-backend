@@ -18,4 +18,9 @@ func Init() {
 	Router.POST("/secret/create/",handler.DebunksCreate)
 	Router.DELETE("/secret/delete/",handler.DebunksDelete)
 	Router.GET("/secret/history/",handler.DebunksHistory)
+	Router.GET("/secret/square/",handler.DebunksSquare)
+	Router.POST("/comment/create/",handler.CommentCreate)
+	Router.GET("/comment/{secret_id}/history/",handler.CommentHistory)
+	Router.DELETE("/comment/delete/",handler.CommentDelete)
+	Router.GET("/remind/night/remindbox/view",handler.RemindNightRemindboxView)
 }
