@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-const dns = "root:ccnudx@tcp(localhost:3306)/mini_project"
+const dns = "root:@tcp(localhost:3306)/mini_project"
 
 type Database struct {
 	Self *gorm.DB
