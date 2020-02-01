@@ -16,11 +16,12 @@ type Database struct {
 var Db *Database
 
 func getDatabase() (*gorm.DB, error) {
-	db, err := gorm.Open("mysql",dns)
+	db, err := gorm.Open("mysql", dns)
 	if err != nil {
 		fmt.Print("getDatabase")
 		log.Println(err)
 	}
+	db.SingularTable(true)
 	return db, err
 }
 
@@ -29,12 +30,12 @@ func (db *Database) Init() {
 	if err != nil {
 
 	}
-	Db = &Database{Self:newDb}
+	Db = &Database{Self: newDb}
 }
 
-func (db *Database) Close() {
+func (db *Database) Close() error {
 	if err := Db.Self.Close(); err != nil {
-
+		return err
 	}
-	return
+	return nil
 }

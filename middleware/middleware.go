@@ -2,58 +2,43 @@ package middleware
 
 import (
 	"fmt"
+	"github.com/2020-LonelyPlanet-backend/miniProject/handler"
+	error2 "github.com/2020-LonelyPlanet-backend/miniProject/pkg/error"
 	"github.com/dgrijalva/jwt-go"
-	"log"
-	"time"
-
-	//"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"log"
 )
-
-type jwtClaims struct {
-	jwt.StandardClaims
-	Uid string	`json:"uid"`
-}
 
 var (
 	key        = "miniProject" //salt
-	ExpireTime = 3600          //token expire time
+	//ExpireTime = 3600          //token expire time
 )
 
 func JwtAAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenStr := c.Request.Header.Get("token")
 		if tokenStr == "" {
-			c.String(401, "token invalid")
-			c.Abort()
+			handler.ErrTokenInvalid(c, error2.TokenInvalid)
 			//跳转登录界面
 			return
 		}
-		//refresh(c)
 		token, err := verifyToken(tokenStr)
 		if token == nil || err != nil {
-			c.String(401, "token invalid")
-			c.Abort()
+			handler.ErrTokenInvalid(c, error2.TokenInvalid)
 			//跳转登录页面
 			return
 		}
 		if !token.Valid {
-			c.String(401, "token invalid")
-			c.Abort()
+			handler.ErrTokenInvalid(c, error2.TokenInvalid)
 			//跳转登录页面
 			return
 		}
 		claim := token.Claims
-//		uid := strconv.Itoa(claim.UserID)
 		c.Set("uid", claim.(jwt.MapClaims)["uid"])
-		//fmt.Println(token)
-//		fmt.Printf("%T",claim.UserID)
-
 		c.Next()
-		//c.Abort()
 	}
 }
-
+/*
 func ProduceToken(uid string) string {
 	//id, _ := strconv.Atoi(uid)
 	claims := &jwtClaims{
@@ -80,7 +65,7 @@ func genToken(claims jwtClaims) (string, error) {
 	}
 	return signedToken, nil
 }
-
+*/
 
 func verifyToken(verifyToken string) (*jwt.Token, error) {
 	token, err := jwt.Parse(verifyToken, func(token *jwt.Token) (i interface{}, err error) {
@@ -91,15 +76,6 @@ func verifyToken(verifyToken string) (*jwt.Token, error) {
 		fmt.Println(err)
 		return nil, err
 	}
-	/*claims, ok := token.Claims.(*jwtClaims)
-	if !ok {
-		return nil, errors.New("token Invalid")
-	}
-	if err := token.Claims.Valid(); err != nil {
-		log.Print("verifyToken")
-		fmt.Println(err)
-		return nil, errors.New("token Invalid")
-	}*/
 	return token, nil
 }
 
