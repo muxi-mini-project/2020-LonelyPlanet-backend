@@ -272,12 +272,21 @@ paths:
                 type: array
                 items:
                   properties:
-                    secretId :
+                    secret_id :
                       type: string  #不显示
                     content:
                       type: string
-                    sendTime:
+                    send_time:
                       type: string
+                    colour:
+                      type: string
+        400:
+          description: 请求失败 
+          schema:
+            type: object
+            properties:
+              msg:
+                type: string
         401:
           description: 身份认证错误
           schema:
@@ -722,13 +731,10 @@ paths:
           in: body
           schema:
             required:
-              - senderSid
               - commentTime
               - content
               - secretId
             properties:
-              senderSid:
-                type: string
               commentTime:
                 type: integer
               comment:
@@ -1374,3 +1380,4 @@ paths:
             properties:
               msg:
                 type: string
+ 
