@@ -2,16 +2,12 @@ package handler
 
 import (
 	"fmt"
-	"github.com/2020-LonelyPlanet-backend/miniProject/middleware"
+	//"github.com/2020-LonelyPlanet-backend/miniProject/middleware"
 	"github.com/2020-LonelyPlanet-backend/miniProject/model"
 	error2 "github.com/2020-LonelyPlanet-backend/miniProject/pkg/error"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-<<<<<<< HEAD
 	"log"
-=======
-	log "github.com/sirupsen/logrus"
->>>>>>> e29a1e1360672468b9761bcd5446b1855c1d3870
 	"math/rand"
 	"time"
 )
@@ -167,8 +163,5 @@ func ChangeInfo(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"msg": "Success",
 	})
-<<<<<<< HEAD
 	return
-=======
->>>>>>> e29a1e1360672468b9761bcd5446b1855c1d3870
 }

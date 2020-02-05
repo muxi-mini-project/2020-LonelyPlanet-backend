@@ -12,7 +12,6 @@ func Init() {
 	Router = gin.Default()
 	Router.POST("/login/", handler.UserLogin) //用户登录
 	Router.Use(middleware.JwtAAuth())
-<<<<<<< HEAD
 	Router.GET("/test", handler.Test)
 	Router.GET("/user/info/", handler.Homepage)          //用户主页
 	Router.POST("/user/changeInfo/", handler.ChangeInfo) //更改用户信息
@@ -33,10 +32,10 @@ func Init() {
 	Router.GET("/application/unsolve/", handler.ViewAllApplicationRemind)               //点击申请提醒　查看所有待确认和接受的申请
 	Router.POST("/application/view_info/:application_id/", handler.UpdateRemindStatus2) //更新收件人阅读状态
 	//Router.GET("/application/{application_id}/result/")
-=======
-	Router.GET("/test",handler.Test)
-	Router.GET("/user/info/",handler.Homepage)
-	Router.POST("/user/changeInfo/",handler.ChangeInfo)
+
+//	Router.GET("/test",handler.Test)
+//	Router.GET("/user/info/",handler.Homepage)
+//	Router.POST("/user/changeInfo/",handler.ChangeInfo)
 	Router.POST("/secret/create/",handler.DebunksCreate)
 	Router.DELETE("/secret/delete/",handler.DebunksDelete)
 	Router.GET("/secret/history/",handler.DebunksHistory)
@@ -45,5 +44,5 @@ func Init() {
 	Router.GET("/comment/{secret_id}/history/",handler.CommentHistory)
 	Router.DELETE("/comment/delete/",handler.CommentDelete)
 	Router.GET("/remind/night/remindbox/view",handler.RemindNightRemindboxView)
->>>>>>> e29a1e1360672468b9761bcd5446b1855c1d3870
+
 }

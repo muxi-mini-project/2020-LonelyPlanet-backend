@@ -171,7 +171,7 @@ func RequirementFind(type1 int, date string, time_from int, time_end int, tag []
 			db = db.Where("ABS(time_end - ?) <= 1",time_end)
 		}
 
-	}ments)
+	}
 	return tmpRequirements
 }
 */
@@ -606,7 +606,6 @@ func SolveApplication(applicationId int, status int) error {
 	*/
 	return nil
 }
-<<<<<<< HEAD
 
 type ReminderInfo struct {
 	Status           int    `json:"status"`
@@ -795,5 +794,3 @@ func ReminderChangeStatus(applicationId int, sid string, type1 int) (error, bool
 	}
 	return nil, true
 }
-=======
->>>>>>> e29a1e1360672468b9761bcd5446b1855c1d3870
