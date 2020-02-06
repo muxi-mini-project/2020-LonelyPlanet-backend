@@ -50,6 +50,7 @@ func UserLogin(c *gin.Context) {
 		return
 	}
 
+	//c.SetCookie("token", produceToken(user.Sid), 3600, "/", "mini", true, false)
 	c.Header("token", produceToken(user.Sid))
 	c.JSON(200, gin.H{
 		"msg": "success",
@@ -62,8 +63,9 @@ func Test(c *gin.Context) {
 	//a := c.Query("qq")
 	//fmt.Println(len(a))
 	//token := c.Request.Header.Get("token")
-	uid := c.GetString("uid")
-	fmt.Println(uid)
+	//uid := c.GetString("uid")
+	//fmt.Println(uid)
+	c.SetCookie("1", "2", 3600, "/", "l", false, true)
 	return
 }
 
