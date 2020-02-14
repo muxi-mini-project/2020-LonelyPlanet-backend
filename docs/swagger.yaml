@@ -1,4 +1,4 @@
-basePath: /
+basePath: /lonely_planet/v1/
 definitions:
   error.Error:
     properties:
@@ -230,6 +230,41 @@ info:
   title: lonely planet
   version: "1.0"
 paths:
+  /application/done/:application_id/:
+    post:
+      consumes:
+      - application/json
+      description: 更新申收件人阅读状态, 需要在用户在申请提醒中点击需求或者点击小眼睛或者直接处理请求的同时, 通过请求这条来更新状态, 如果可以希望可以根据是否已读来判断是否进行此次请求以减少请求次数
+      parameters:
+      - description: 用户已查看的申请id, 在别的api中给出
+        in: path
+        name: application_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg":"success"} 成功'
+          schema:
+            $ref: '#/definitions/model.Res'
+        "400":
+          description: '{"error_code":"00001", "message":"Fail."} or {"error_code":"00002",
+            "message":"Lack Param Or Param Not Satisfiable."}'
+          schema:
+            $ref: '#/definitions/error.Error'
+        "401":
+          description: '{"error_code":"10001", "message":"Token Invalid."} 身份认证失败
+            重新登录'
+          schema:
+            $ref: '#/definitions/error.Error'
+        "500":
+          description: '{"error_code":"30001", "message":"Fail."} 失败'
+          schema:
+            $ref: '#/definitions/error.Error'
+      summary: 更新收件人阅读状态
+      tags:
+      - remind
   /application/solve/{application_id}/:
     put:
       consumes:
@@ -270,7 +305,7 @@ paths:
       summary: 处理请求
       tags:
       - application
-  /application/unsolve/:
+  /application/todo/:
     get:
       consumes:
       - application/json
@@ -310,41 +345,6 @@ paths:
       summary: 申请提醒
       tags:
       - application
-  /application/view_info/{application_id}/:
-    post:
-      consumes:
-      - application/json
-      description: 更新申收件人阅读状态, 需要在用户在申请提醒中点击需求或者点击小眼睛或者直接处理请求的同时, 通过请求这条来更新状态, 如果可以希望可以根据是否已读来判断是否进行此次请求以减少请求次数
-      parameters:
-      - description: 用户已查看的申请id, 在别的api中给出
-        in: path
-        name: application_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: '{"msg":"success"} 成功'
-          schema:
-            $ref: '#/definitions/model.Res'
-        "400":
-          description: '{"error_code":"00001", "message":"Fail."} or {"error_code":"00002",
-            "message":"Lack Param Or Param Not Satisfiable."}'
-          schema:
-            $ref: '#/definitions/error.Error'
-        "401":
-          description: '{"error_code":"10001", "message":"Token Invalid."} 身份认证失败
-            重新登录'
-          schema:
-            $ref: '#/definitions/error.Error'
-        "500":
-          description: '{"error_code":"30001", "message":"Fail."} 失败'
-          schema:
-            $ref: '#/definitions/error.Error'
-      summary: 更新收件人阅读状态
-      tags:
-      - remind
   /login/:
     post:
       consumes:
@@ -422,7 +422,7 @@ paths:
       summary: 回复提醒
       tags:
       - remind
-  /remind/day/remindbox/info/{application_id}/:
+  /remind/day/remindbox/done/:application_id/:
     post:
       consumes:
       - application/json
@@ -521,7 +521,7 @@ paths:
       summary: 删除已发布的需求
       tags:
       - requirement
-  /requirement/apply/{requirement_id}/:
+  /requirement/application/:requirement_id/:
     post:
       consumes:
       - application/json
@@ -562,43 +562,6 @@ paths:
       summary: 申请需求
       tags:
       - requirement
-  /requirement/create/:
-    put:
-      consumes:
-      - application/json
-      description: 用户发布需求
-      parameters:
-      - description: 新发布的需求详情
-        in: body
-        name: requirement
-        required: true
-        schema:
-          $ref: '#/definitions/model.Requirements'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: '{"msg":"success"} 成功 {"msg":"requirement already exist."}
-            提示重复发布需求了'
-          schema:
-            $ref: '#/definitions/model.Res'
-        "400":
-          description: '{"error_code":"00001", "message":"Fail."} or {"error_code":"00002",
-            "message":"Lack Param Or Param Not Satisfiable."}'
-          schema:
-            $ref: '#/definitions/error.Error'
-        "401":
-          description: '{"error_code":"10001", "message":"Token Invalid."} 身份认证失败
-            重新登录'
-          schema:
-            $ref: '#/definitions/error.Error'
-        "500":
-          description: '{"error_code":"30001", "message":"Fail."} 失败'
-          schema:
-            $ref: '#/definitions/error.Error'
-      summary: 发布需求
-      tags:
-      - requirement
   /requirement/history/:
     get:
       consumes:
@@ -637,6 +600,43 @@ paths:
           schema:
             $ref: '#/definitions/error.Error'
       summary: 历史发布需求
+      tags:
+      - requirement
+  /requirement/new/:
+    put:
+      consumes:
+      - application/json
+      description: 用户发布需求
+      parameters:
+      - description: 新发布的需求详情
+        in: body
+        name: requirement
+        required: true
+        schema:
+          $ref: '#/definitions/model.Requirements'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"msg":"success"} 成功 {"msg":"requirement already exist."}
+            提示重复发布需求了'
+          schema:
+            $ref: '#/definitions/model.Res'
+        "400":
+          description: '{"error_code":"00001", "message":"Fail."} or {"error_code":"00002",
+            "message":"Lack Param Or Param Not Satisfiable."}'
+          schema:
+            $ref: '#/definitions/error.Error'
+        "401":
+          description: '{"error_code":"10001", "message":"Token Invalid."} 身份认证失败
+            重新登录'
+          schema:
+            $ref: '#/definitions/error.Error'
+        "500":
+          description: '{"error_code":"30001", "message":"Fail."} 失败'
+          schema:
+            $ref: '#/definitions/error.Error'
+      summary: 发布需求
       tags:
       - requirement
   /requirement/square/:
@@ -739,7 +739,7 @@ paths:
       summary: 查看特定需求
       tags:
       - requirement
-  /user/changeInfo/:
+  /user/change_info/:
     post:
       consumes:
       - application/json

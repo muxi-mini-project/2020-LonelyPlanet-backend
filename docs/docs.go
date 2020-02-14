@@ -25,6 +25,56 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/application/done/:application_id/": {
+            "post": {
+                "description": "更新申收件人阅读状态, 需要在用户在申请提醒中点击需求或者点击小眼睛或者直接处理请求的同时, 通过请求这条来更新状态, 如果可以希望可以根据是否已读来判断是否进行此次请求以减少请求次数",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "remind"
+                ],
+                "summary": "更新收件人阅读状态",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户已查看的申请id, 在别的api中给出",
+                        "name": "application_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"msg\":\"success\"} 成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.Res"
+                        }
+                    },
+                    "400": {
+                        "description": "{\"error_code\":\"00001\", \"message\":\"Fail.\"} or {\"error_code\":\"00002\", \"message\":\"Lack Param Or Param Not Satisfiable.\"}",
+                        "schema": {
+                            "$ref": "#/definitions/error.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "{\"error_code\":\"10001\", \"message\":\"Token Invalid.\"} 身份认证失败 重新登录",
+                        "schema": {
+                            "$ref": "#/definitions/error.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"error_code\":\"30001\", \"message\":\"Fail.\"} 失败",
+                        "schema": {
+                            "$ref": "#/definitions/error.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/application/solve/{application_id}/": {
             "put": {
                 "description": "根据请求Id来处理请求，id别的api会给出，通过状态status来处理请求，2为接受，3为拒绝",
@@ -82,7 +132,7 @@ var doc = `{
                 }
             }
         },
-        "/application/unsolve/": {
+        "/application/todo/": {
             "get": {
                 "description": "点击申请提醒　查看所有待确认和接受的申请",
                 "consumes": [
@@ -116,56 +166,6 @@ var doc = `{
                         "description": "{\"msg\":\"success\", \"num\":数量, \"applications\":数组，其中包含每个的id}，其中red_point字段是用来表示是否未读，即单条信息是否显示小红点",
                         "schema": {
                             "$ref": "#/definitions/model.ApplicationView"
-                        }
-                    },
-                    "400": {
-                        "description": "{\"error_code\":\"00001\", \"message\":\"Fail.\"} or {\"error_code\":\"00002\", \"message\":\"Lack Param Or Param Not Satisfiable.\"}",
-                        "schema": {
-                            "$ref": "#/definitions/error.Error"
-                        }
-                    },
-                    "401": {
-                        "description": "{\"error_code\":\"10001\", \"message\":\"Token Invalid.\"} 身份认证失败 重新登录",
-                        "schema": {
-                            "$ref": "#/definitions/error.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "{\"error_code\":\"30001\", \"message\":\"Fail.\"} 失败",
-                        "schema": {
-                            "$ref": "#/definitions/error.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/application/view_info/{application_id}/": {
-            "post": {
-                "description": "更新申收件人阅读状态, 需要在用户在申请提醒中点击需求或者点击小眼睛或者直接处理请求的同时, 通过请求这条来更新状态, 如果可以希望可以根据是否已读来判断是否进行此次请求以减少请求次数",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "remind"
-                ],
-                "summary": "更新收件人阅读状态",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "用户已查看的申请id, 在别的api中给出",
-                        "name": "application_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "{\"msg\":\"success\"} 成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.Res"
                         }
                     },
                     "400": {
@@ -298,7 +298,7 @@ var doc = `{
                 }
             }
         },
-        "/remind/day/remindbox/info/{application_id}/": {
+        "/remind/day/remindbox/done/:application_id/": {
             "post": {
                 "description": "更新申请人阅读状态, 需要在用户在回复提醒中点击需求或者点击小眼睛的同时, 通过请求这条来更新状态, 如果可以希望可以根据是否已读来判断是否进行此次请求以减少请求次数",
                 "consumes": [
@@ -389,7 +389,7 @@ var doc = `{
                 }
             }
         },
-        "/requirement/apply/{requirement_id}/": {
+        "/requirement/application/:requirement_id/": {
             "post": {
                 "description": "根据id来申请特定的需求",
                 "consumes": [
@@ -423,58 +423,6 @@ var doc = `{
                 "responses": {
                     "200": {
                         "description": "{\"msg\":\"success\"}/{\"msg\":\"不能申请自己的需求!\"}/{\"msg\":\"已经申请过了!\"}",
-                        "schema": {
-                            "$ref": "#/definitions/model.Res"
-                        }
-                    },
-                    "400": {
-                        "description": "{\"error_code\":\"00001\", \"message\":\"Fail.\"} or {\"error_code\":\"00002\", \"message\":\"Lack Param Or Param Not Satisfiable.\"}",
-                        "schema": {
-                            "$ref": "#/definitions/error.Error"
-                        }
-                    },
-                    "401": {
-                        "description": "{\"error_code\":\"10001\", \"message\":\"Token Invalid.\"} 身份认证失败 重新登录",
-                        "schema": {
-                            "$ref": "#/definitions/error.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "{\"error_code\":\"30001\", \"message\":\"Fail.\"} 失败",
-                        "schema": {
-                            "$ref": "#/definitions/error.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/requirement/create/": {
-            "put": {
-                "description": "用户发布需求",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "requirement"
-                ],
-                "summary": "发布需求",
-                "parameters": [
-                    {
-                        "description": "新发布的需求详情",
-                        "name": "requirement",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.Requirements"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "{\"msg\":\"success\"} 成功 {\"msg\":\"requirement already exist.\"} 提示重复发布需求了",
                         "schema": {
                             "$ref": "#/definitions/model.Res"
                         }
@@ -534,6 +482,58 @@ var doc = `{
                         "description": "{\"msg\":\"success\", \"num\":数量, \"history\":数组，其中包含每个的id}",
                         "schema": {
                             "$ref": "#/definitions/model.ViewHistoryRequirement"
+                        }
+                    },
+                    "400": {
+                        "description": "{\"error_code\":\"00001\", \"message\":\"Fail.\"} or {\"error_code\":\"00002\", \"message\":\"Lack Param Or Param Not Satisfiable.\"}",
+                        "schema": {
+                            "$ref": "#/definitions/error.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "{\"error_code\":\"10001\", \"message\":\"Token Invalid.\"} 身份认证失败 重新登录",
+                        "schema": {
+                            "$ref": "#/definitions/error.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"error_code\":\"30001\", \"message\":\"Fail.\"} 失败",
+                        "schema": {
+                            "$ref": "#/definitions/error.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/requirement/new/": {
+            "put": {
+                "description": "用户发布需求",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "requirement"
+                ],
+                "summary": "发布需求",
+                "parameters": [
+                    {
+                        "description": "新发布的需求详情",
+                        "name": "requirement",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Requirements"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"msg\":\"success\"} 成功 {\"msg\":\"requirement already exist.\"} 提示重复发布需求了",
+                        "schema": {
+                            "$ref": "#/definitions/model.Res"
                         }
                     },
                     "400": {
@@ -751,7 +751,7 @@ var doc = `{
                 }
             }
         },
-        "/user/changeInfo/": {
+        "/user/change_info/": {
             "post": {
                 "description": "VerifyItem传入修改的板块,当前只能更改昵称",
                 "consumes": [
@@ -1162,7 +1162,7 @@ type swaggerInfo struct {
 var SwaggerInfo = swaggerInfo{
 	Version:     "1.0",
 	Host:        "47.97.74.180:9090",
-	BasePath:    "/",
+	BasePath:    "/lonely_planet/v1/",
 	Schemes:     []string{},
 	Title:       "lonely planet",
 	Description: "孤独星球",

@@ -169,7 +169,7 @@ func genToken(claims jwtClaims) (string, error) {
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
 // @Failure 500 {object} error.Error "{"error_code":"30001", "message":"Fail."} 失败"
-// @Router /user/changeInfo/ [post]
+// @Router /user/change_info/ [post]
 func ChangeInfo(c *gin.Context) {
 	uid := c.GetString("uid")
 	var tmpInfo verifyInfo
