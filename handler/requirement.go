@@ -367,7 +367,7 @@ func detectPostRequirement(tmp model.Requirements) bool {
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
 // @Failure 500 {object} error.Error "{"error_code":"30001", "message":"Fail."} 失败"
-// @Router /requirement/create/ [put]
+// @Router /requirement/new/ [put]
 func PostRequirement(c *gin.Context) {
 	var newRequirement model.Requirements
 	err := c.BindJSON(&newRequirement)
@@ -471,7 +471,7 @@ func HistoryRequirement(c *gin.Context) {
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
 // @Failure 500 {object} error.Error "{"error_code":"30001", "message":"Fail."} 失败"
-// @Router /requirement/apply/{requirement_id}/ [post]
+// @Router /requirement/application/:requirement_id/ [post]
 func ApplyRequirement(c *gin.Context) {
 	uid := c.GetString("uid")
 	if len(c.Param("requirement_id")) == 0 {

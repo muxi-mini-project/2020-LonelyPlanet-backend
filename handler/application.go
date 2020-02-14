@@ -84,7 +84,7 @@ func SolveApplication(c *gin.Context) {
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
 // @Failure 500 {object} error.Error "{"error_code":"30001", "message":"Fail."} 失败"
-// @Router /application/unsolve/ [get]
+// @Router /application/todo/ [get]
 func ViewAllApplicationRemind(c *gin.Context) {
 	uid := c.GetString("uid")
 	if len(c.Query("limit")) == 0 {

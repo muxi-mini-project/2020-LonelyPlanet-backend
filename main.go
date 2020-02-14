@@ -11,7 +11,7 @@ import (
 // @description 孤独星球
 
 // @host 47.97.74.180:9090
-// @BasePath /
+// @BasePath /lonely_planet/v1/
 
 // @Schemas http
 

@@ -102,7 +102,7 @@ func ReminderBox(c *gin.Context) {
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
 // @Failure 500 {object} error.Error "{"error_code":"30001", "message":"Fail."} 失败"
-// @Router /remind/day/remindbox/info/{application_id}/ [post]
+// @Router /remind/day/remindbox/done/:application_id/ [post]
 func UpdateRemindStatus1(c *gin.Context) {
 	uid := c.GetString("uid")
 	if len(c.Param("application_id")) == 0 {
@@ -139,7 +139,7 @@ func UpdateRemindStatus1(c *gin.Context) {
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
 // @Failure 500 {object} error.Error "{"error_code":"30001", "message":"Fail."} 失败"
-// @Router /application/view_info/{application_id}/ [post]
+// @Router /application/done/:application_id/ [post]
 func UpdateRemindStatus2(c *gin.Context) {
 	uid := c.GetString("uid")
 	if len(c.Param("application_id")) == 0 {

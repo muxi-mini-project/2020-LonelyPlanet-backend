@@ -1,5 +1,6 @@
 all: gotool
 	@go build -v .
+	@swag init
 clean:
 	rm -f main
 	find . -name "[._]*.s[a-w][a-z]" | xargs -i rm -f {}
