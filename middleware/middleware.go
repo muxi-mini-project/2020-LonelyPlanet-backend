@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	key        = "miniProject" //salt
+	key = "miniProject" //salt
 	//ExpireTime = 3600          //token expire time
 )
 
@@ -38,6 +38,7 @@ func JwtAAuth() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
 /*
 func ProduceToken(uid string) string {
 	//id, _ := strconv.Atoi(uid)
@@ -99,7 +100,7 @@ func verifyToken(varifyToken string) (*jwtClaims, error) {
 	}
 	return nil, err
 }
- */
+*/
 
 /*
 func refresh(c *gin.Context) {

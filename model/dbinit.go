@@ -3,9 +3,9 @@ package model
 import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/howeyc/gopass"
 	"github.com/jinzhu/gorm"
 	"log"
+	"os"
 )
 
 type Database struct {
@@ -14,25 +14,25 @@ type Database struct {
 
 var Db *Database
 
-func getDatabase(user, password string) (*gorm.DB, error) {
-	db, err := gorm.Open("mysql", user+":"+password+"@tcp(localhost:3306)/mini_project")
+func getDatabase() (*gorm.DB, error) {
+	dns := fmt.Sprintf("%s:%s@tcp(localhost:3306)/mini_project",
+		os.Getenv("DBUser"),
+		os.Getenv("DBPassword"))
+	db, err := gorm.Open("mysql", dns)
 	if err != nil {
 		fmt.Print("getDatabase")
 		log.Println(err)
+		db = nil
 	}
 	db.SingularTable(true)
 	return db, err
 }
 
 func (db *Database) Init() {
-	var user string
-	fmt.Println("输入数据库用户名:")
-	fmt.Scanf("%s", &user)
-	fmt.Println("输入密码:")
-	password, _ := gopass.GetPasswdMasked()
-	newDb, err := getDatabase(user, string(password))
+	newDb, err := getDatabase()
 	if err != nil {
-
+		log.Printf("DBInit")
+		fmt.Println(err)
 	}
 	Db = &Database{Self: newDb}
 }

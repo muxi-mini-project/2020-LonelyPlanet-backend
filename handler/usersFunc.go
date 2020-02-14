@@ -17,11 +17,21 @@ type verifyInfo struct {
 	VerifyInfo string `json:"verify_info"`
 }
 
+// @Summary 登录
+// @Description Login
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param loginInfo body model.LoginInfo true "学号和密码"
+// @Success 200 {object} model.Res "{"msg":"success"}"
+// @Failure 401 {object} error.Error "{"error_code":"20001", "message":"Password or account wrong."} 登录失败, {"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
+// @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
+// @Failure 500 {object} error.Error "{"error_code":"30001", "message":"Fail."} 失败"
+// @Router /login/ [post]
 func UserLogin(c *gin.Context) {
 	//a, _ := c.Get("token2")
 	var tmpUser model.SuInfo
 	var tmpLoginInfo model.LoginInfo
-	fmt.Println("121")
 	if err := c.BindJSON(&tmpLoginInfo); err != nil {
 		ErrBadRequest(c, error2.BadRequest)
 		return
@@ -29,22 +39,22 @@ func UserLogin(c *gin.Context) {
 
 	tmpUser, err := model.GetUserInfoFormOne(tmpLoginInfo.Sid, tmpLoginInfo.Pwd)
 	if err != nil {
-		ErrBadRequest(c, error2.LoginError)
+		ErrUnauthorized(c, error2.LoginError)
 		return
 	}
 
-	//fmt.Print(tmpUser)
+	//fmt.Println(tmpUser)
 
 	user := model.UserInfo{
-		Sid:           tmpUser.User.Usernumber,
-		NickName:      getRandomString(8),
-		College:       tmpUser.User.DeptName,
-		Gender:        getGender(tmpUser.User.Xb),
-		Grade:         model.ChangeString(tmpUser.User.Usernumber, 1, 4),
-		Portrait:      getRandomPortrait(),//rand
+		Sid:      tmpUser.User.Usernumber,
+		NickName: getRandomString(8),
+		College:  tmpUser.User.DeptName,
+		Gender:   getGender(tmpUser.User.Xb),
+		Grade:    model.ChangeString(tmpUser.User.Usernumber, 1, 4),
+		Portrait: getRandomPortrait(), //rand
 	}
 
-	err = model.CreatUser(user)    //写入用户数据到数据库
+	err = model.CreatUser(user) //写入用户数据到数据库
 	if err != nil {
 		ErrServerError(c, error2.ServerError)
 		return
@@ -114,7 +124,7 @@ func Homepage(c *gin.Context) {
 
 type jwtClaims struct {
 	jwt.StandardClaims
-	Uid string	`json:"uid"`
+	Uid string `json:"uid"`
 }
 
 var (
@@ -149,6 +159,17 @@ func genToken(claims jwtClaims) (string, error) {
 	return signedToken, nil
 }
 
+// @Summary 更改用户信息
+// @Description VerifyItem传入修改的板块,当前只能更改昵称
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param verifyInfo body handler.verifyInfo true "修改的板块和信息"
+// @Success 200 {object} model.Res "{"msg":"success"} 成功"
+// @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
+// @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
+// @Failure 500 {object} error.Error "{"error_code":"30001", "message":"Fail."} 失败"
+// @Router /user/changeInfo/ [post]
 func ChangeInfo(c *gin.Context) {
 	uid := c.GetString("uid")
 	var tmpInfo verifyInfo
@@ -157,13 +178,17 @@ func ChangeInfo(c *gin.Context) {
 		ErrBadRequest(c, error2.BadRequest)
 		return
 	}
-	err := model.VerifyInfo(uid, tmpInfo.VerifyItem, tmpInfo.VerifyInfo)
+	if tmpInfo.VerifyItem != "Nickname" {
+		ErrBadRequest(c, error2.ParamBadRequest)
+		return
+	}
+	err := model.VerifyInfo(uid, tmpInfo.VerifyItem, tmpInfo.VerifyInfo) //便于以后扩充
 	if err != nil {
 		ErrServerError(c, error2.ServerError)
 		return
 	}
 	c.JSON(200, gin.H{
-		"msg": "Success",
+		"msg": "success",
 	})
 	return
 }

@@ -6,6 +6,15 @@ import (
 	"log"
 )
 
+// @title lonely planet
+// @version 1.0
+// @description 孤独星球
+
+// @host 47.97.74.180:9090
+// @BasePath /
+
+// @Schemas http
+
 func main() {
 	model.Db.Init()
 	defer model.Db.Close()

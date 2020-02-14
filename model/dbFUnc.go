@@ -1,7 +1,6 @@
 package model
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"math/rand"
@@ -9,24 +8,6 @@ import (
 	"sync"
 	"time"
 )
-
-type Requirements struct {
-	RequirementId   int    `gorm:"requirement_id" json:"requirement_id"`
-	SenderSid        string `gorm:"sender_sid" json:"-"`
-	Title            string `gorm:"title" json:"title"`
-	Content          string `gorm:"content" json:"content"`
-	PostTime         string `gorm:"post_time" json:"post_time"`
-	Date             int `gorm:"date" json:"date"`
-	TimeFrom         int    `gorm:"time_form" json:"time_from"`
-	TimeEnd          int    `gorm:"time_end" json:"time_end"`
-	RequirePeopleNum int    `gorm:"require_people_num" json:"require_people_num"`
-	Place            int    `gorm:"place" json:"place"`
-	Tag              int    `gorm:"tag" json:"tag"`
-	Type             int    `gorm:"type" json:"type"`
-	ContactWayType   string `gorm:"contact_way_type" json:"contact_way_type"`
-	ContactWay       string `gorm:"contact_way" json:"contact_way"`
-	Status           int    `gorm:"default:1" json:"-"`
-}
 
 /*
 type reminders struct {
@@ -56,9 +37,9 @@ type application struct {
 }
 
 type latestAction struct {
-	Sid string `gorm:"sid"`
+	Sid        string `gorm:"sid"`
 	LatestTime string `gorm:"latest_time"`
-	RandNum int `gorm:"rand_num"`
+	RandNum    int    `gorm:"rand_num"`
 }
 
 func CreatUser(tmpUser UserInfo) error {
@@ -176,13 +157,12 @@ func RequirementFind(type1 int, date string, time_from int, time_end int, tag []
 }
 */
 
-
 func RecordAction(uid string, num int, t string) error {
 	var tmpAction latestAction
 	tmpAction.LatestTime = t
-//	tmpAction.Sid = uid
+	//	tmpAction.Sid = uid
 	if num != -1 { //只有在需要更新的时候更新
-		tmpAction.RandNum = num//getRandomNum()
+		tmpAction.RandNum = num //getRandomNum()
 	}
 	if err := Db.Self.Model(&latestAction{}).Where("sid = ?", uid).Update(tmpAction).Error; err != nil {
 		return err
@@ -196,11 +176,11 @@ func getRandomNum() int {
 }
 
 type requirementInSquare struct {
-	RequirementId int `json:"requirement_id"`
-	Title string `json:"title"`
-	Date string `json:"date"`
-	Tag  string `json:"tag"`
-	Place string `json:"place"`
+	RequirementId int    `json:"requirement_id"`
+	Title         string `json:"title"`
+	Date          string `json:"date"`
+	Tag           string `json:"tag"`
+	Place         string `json:"place"`
 }
 
 func RequirementFind(type1 int, sid string, date int, timeFrom int, timeEnd int, tag []int, place []int, limit int, offset int) ([]requirementInSquare, error) {
@@ -218,7 +198,7 @@ func RequirementFind(type1 int, sid string, date int, timeFrom int, timeEnd int,
 		if err != nil {
 			return result, err
 		}
-	}else {
+	} else {
 		if err := Db.Self.Model(&latestAction{}).Where("sid = ?", sid).Find(&tmpRecord).Error; err != nil {
 			return result, err
 		}
@@ -237,16 +217,15 @@ func RequirementFind(type1 int, sid string, date int, timeFrom int, timeEnd int,
 			db = db.Model(&Requirements{}).Or(Requirements{Tag: v})
 		}
 	}
-/*
-	if len(date) != 0 {
-		db = db.Where("date & ? != 0 ", date)
-	}
-*/
+	/*
+		if len(date) != 0 {
+			db = db.Where("date & ? != 0 ", date)
+		}
+	*/
 	if date != 0 {
 		//tmp,_ := strconv.Atoi(date)
 		db = db.Where("date & ? > 128 ", date)
 	}
-
 
 	//var result []requirements
 	//改
@@ -257,9 +236,9 @@ func RequirementFind(type1 int, sid string, date int, timeFrom int, timeEnd int,
 		db = db.Where(" ? - time_end >= 1", timeEnd)
 	}
 
-	db = db.Where("post_time < ?", tmpRecord.LatestTime)    //确保分页准确
+	db = db.Where("post_time < ?", tmpRecord.LatestTime) //确保分页准确
 
-	db = db.Order("rand("+strconv.Itoa(tmpRecord.RandNum)+")")
+	db = db.Order("rand(" + strconv.Itoa(tmpRecord.RandNum) + ")")
 
 	if err := db.Offset(offset).Limit(limit).Find(&tmpRequirements).Error; err != nil {
 		log.Print("search err:")
@@ -279,6 +258,21 @@ func RequirementFind(type1 int, sid string, date int, timeFrom int, timeEnd int,
 	return result, nil
 }
 
+//真-->存在
+func ConfirmRequirementExist(requirements Requirements) (error, bool) {
+	var tmpRequirement []Requirements
+	if err := Db.Self.Model(&Requirements{}).Where("sender_sid = ?", requirements.SenderSid).Find(&tmpRequirement).Error; err != nil {
+		fmt.Println(err)
+		return err, false
+	}
+	for _, v := range tmpRequirement {
+		if v.Content == requirements.Content && v.Title == requirements.Title && v.Status != 2 {
+			return nil, true
+		}
+	}
+	return nil, false
+}
+
 func CreatRequirement(requirements Requirements) error {
 	if err := Db.Self.Model(&Requirements{}).Create(&requirements).Error; err != nil {
 		log.Print("CreatRequirement err")
@@ -294,7 +288,7 @@ type Requirement struct {
 	Title            string `json:"title"`
 	Content          string `json:"content"`
 	PostTime         string `json:"post_time"`
-	Date             int `json:"date"`
+	Date             string `json:"date"`
 	TimeFrom         int    `json:"time_from"`
 	TimeEnd          int    `json:"time_end"`
 	RequirePeopleNum int    `json:"require_people_num"`
@@ -322,7 +316,7 @@ func RequirementInfo(requirementId int) (Requirement, bool, error) {
 	info.Title = tmpInfo.Title
 	info.Content = tmpInfo.Content
 	info.Type = mainTypeImprove(tmpInfo.Type)
-	//info.Date = dateImprove(tmpInfo.Date)
+	info.Date = dateImprove(Dec2BinStr(tmpInfo.Date))
 	info.Place = placeImprove(tmpInfo.Place, tmpInfo.Type)
 	info.Tag = tagImprove(tmpInfo.Tag, tmpInfo.Type)
 	info.SenderNickName = userInfo.NickName
@@ -335,10 +329,10 @@ func RequirementInfo(requirementId int) (Requirement, bool, error) {
 }
 
 type HistoryRequirement struct {
-	RequirementId    int    `json:"requirement_id"`
-	Title            string `json:"title"`
-	PostTime         string `json:"post_time"`
-	Tag              string    `json:"tag"`
+	RequirementId int    `json:"requirement_id"`
+	Title         string `json:"title"`
+	PostTime      string `json:"post_time"`
+	Tag           string `json:"tag"`
 }
 
 func HistoryRequirementFind(uid string, offset int, limit int) ([]HistoryRequirement, error) {
@@ -361,10 +355,14 @@ func HistoryRequirementFind(uid string, offset int, limit int) ([]HistoryRequire
 	return result, nil
 }
 
-func RequirementApply(uid string, requirementId int, contractWayType string, contractWay string) (bool, error) {
+//int: 4: 申请的自己的需求 3: 已经申请过了 2: 申请的需求不存在 1: 成功 0: 未操作
+func RequirementApply(uid string, requirementId int, contractWayType string, contractWay string) (int, error) {
 	tmpInfo, err := GetInfoFromRequirementId(requirementId)
 	if err != nil {
-		return true, err
+		return 2, err
+	}
+	if tmpInfo.SenderSid == uid {
+		return 4, nil
 	}
 	tmpApply := application{
 		SenderSid:      uid,
@@ -376,24 +374,24 @@ func RequirementApply(uid string, requirementId int, contractWayType string, con
 		SendTime:       NowTimeStampStr(),
 		Title:          tmpInfo.Title,
 	}
-	//这里可以改并发
+
 	var num int
-	if err := Db.Self.Model(&application{}).Where(application{SenderSid:uid, RequirementsId:requirementId}).Count(&num).Error; err != nil {
-		return true, err
+	if err := Db.Self.Model(&application{}).Where(application{SenderSid: uid, RequirementsId: requirementId}).Count(&num).Error; err != nil {
+		return 0, err
 	}
 	if num != 0 {
-		return true, nil
+		return 3, nil
 	}
 
 	if err := Db.Self.Model(&application{}).Create(&tmpApply).Error; err != nil {
 		log.Print("RequirementApply err")
 		fmt.Println(err)
-		return true, err
+		return 0, err
 	}
 
 	//新增提醒
 
-	return false, nil
+	return 1, nil
 }
 
 func RequirementDelete(requirementId int, sid string) (error, bool) {
@@ -408,7 +406,7 @@ func RequirementDelete(requirementId int, sid string) (error, bool) {
 	wg.Add(2)
 	var err1, err2 error
 	go func() {
-		if err := Db.Self.Model(&Requirements{}).Where(Requirements{RequirementId: requirementId}).Update(Requirements{Status:2}).Error; err != nil {
+		if err := Db.Self.Model(&Requirements{}).Where(Requirements{RequirementId: requirementId}).Update(Requirements{Status: 2}).Error; err != nil {
 			log.Print("RequirementDelete err")
 			fmt.Println(err)
 			err1 = err
@@ -417,7 +415,7 @@ func RequirementDelete(requirementId int, sid string) (error, bool) {
 	}()
 
 	go func() {
-		if err := Db.Self.Model(&application{}).Where(application{RequirementsId:requirementId}).Update(application{Confirm:4}).Error; err != nil {
+		if err := Db.Self.Model(&application{}).Where(application{RequirementsId: requirementId}).Update(application{Confirm: 4}).Error; err != nil {
 			log.Print("RequirementDelete err")
 			fmt.Println(err)
 			err2 = err
@@ -434,24 +432,41 @@ func RequirementDelete(requirementId int, sid string) (error, bool) {
 	return nil, true
 }
 
-func ConfirmRemindExist(uid string) bool {
-	var num1 int
-	if err := Db.Self.Model(&application{}).Where("receiver_sid = ?", uid).Where("confirm = ?", 1).Where("receiver_read_status = ?", 1).Count(&num1).Error; err != nil {
-		log.Print("ConfirmRemindExist")
-		fmt.Println(err)
-	}
-	var num int
+func ConfirmRemindExist(uid string) (bool, error) {
+	var num1, num int
+	var err1, err2 error
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		if err := Db.Self.Model(&application{}).Where("receiver_sid = ?", uid).Where("confirm = ?", 1).Where("receiver_read_status = ?", 1).Count(&num1).Error; err != nil {
+			log.Print("ConfirmRemindExist:")
+			fmt.Println(err)
+			err1 = err
+		}
+		wg.Done()
+	}()
 	//有可能涉及删除还会提示的问题，应该是修复了，单需要进一步测试一下
 	//同时，如果需要，可以返回一个提醒的数值
-	if err := Db.Self.Model(&application{}).Where("sender_sid = ?", uid).Where("confirm != ?", 1).Where("confirm != ?", 4).Where("sender_read_status = ?", 1).Count(&num).Error; err != nil {
-		log.Print("ConfirmRemindExist")
-		fmt.Println(err)
+	go func() {
+		if err := Db.Self.Model(&application{}).Where("sender_sid = ?", uid).Where("confirm != ?", 1).Where("confirm != ?", 4).Where("sender_read_status = ?", 1).Count(&num).Error; err != nil {
+			log.Print("ConfirmRemindExist:")
+			fmt.Println(err)
+			err2 = err
+		}
+		wg.Done()
+	}()
+	wg.Wait()
+	if err1 != nil {
+		return false, err1
+	}
+	if err2 != nil {
+		return false, err2
 	}
 	num = num1 + num
 	if num == 0 {
-		return false
+		return false, nil
 	}
-	return true
+	return true, nil
 }
 
 /*
@@ -478,7 +493,7 @@ type ViewApplicationInfo struct {
 	Title          string `json:"title"`
 	Gender         string `json:"gender"`
 	Grade          string `json:"grade"`
-	RedPoint          bool   `json:"red_point"`
+	RedPoint       bool   `json:"red_point"`
 }
 
 func ViewAllApplication(uid string, offset int, limit int) ([]ViewApplicationInfo, error) {
@@ -491,7 +506,7 @@ func ViewAllApplication(uid string, offset int, limit int) ([]ViewApplicationInf
 		if err != nil {
 			return result, err
 		}
-	}else {
+	} else {
 		if err := Db.Self.Model(&latestAction{}).Where("sid = ?", uid).Find(&tmpRecord).Error; err != nil {
 			return result, err
 		}
@@ -548,21 +563,23 @@ func ViewApplication(applicationId int, uid string) (ViewApply, error) {//
 }
 */
 
-func SolveApplication(applicationId int, status int) error {
+//int: 4 ->已删除 3 -> 非本人操作 2 ->已处理 1 -> 成功 0 -> 无操作
+func SolveApplication(applicationId int, status int, sid string) (error, int) {
 	var tmp application
+	//排除了恶意application_id
 	if err := Db.Self.Model(&application{}).Where(application{ApplicationId: applicationId}).Find(&tmp).Error; err != nil {
 		log.Print("SolveApplication err")
 		fmt.Println(err)
-		return err
+		return nil, 0
 	}
 
 	if tmp.Confirm == 4 {
-		//通知是已删除的需求
-		return errors.New("是已经删除了的需求")
+		//return errors.New("是已经删除了的需求")
+		return nil, 4
 	}
 
 	if tmp.Confirm == 2 {
-		return nil
+		return nil, 2
 	}
 	tmp.ApplicationId = applicationId
 	tmp.Confirm = status
@@ -570,11 +587,14 @@ func SolveApplication(applicationId int, status int) error {
 	if err := Db.Self.Model(&application{}).Where(application{ApplicationId: tmp.ApplicationId}).Update(tmp).Error; err != nil {
 		log.Print("SolveApplication err")
 		fmt.Println(err)
-		return err
+		return err, 0
 	}
-	err, _ := ReminderChangeStatus(applicationId, "", 1)
+	err, flag := ReminderChangeStatus(applicationId, sid, 1)
 	if err != nil {
-		return err
+		return err, 0
+	}
+	if !flag {
+		return nil, 3
 	}
 	/*
 		if err := Db.Self.Model(&application{}).Where(application{Application_id:application_id}).Delete(application{}).Error; err != nil {
@@ -604,7 +624,7 @@ func SolveApplication(applicationId int, status int) error {
 			return err
 		}
 	*/
-	return nil
+	return nil, 1
 }
 
 type ReminderInfo struct {
@@ -618,7 +638,7 @@ type ReminderInfo struct {
 	College          string `json:"college"`
 	Gender           string `json:"gender"`
 	Grade            string `json:"grade"`
-	RedPoint            bool   `json:"red_point"`
+	RedPoint         bool   `json:"red_point"`
 }
 
 func ReminderBox(uid string, limit int, offset int) ([]ReminderInfo, error) {
@@ -632,7 +652,7 @@ func ReminderBox(uid string, limit int, offset int) ([]ReminderInfo, error) {
 		if err != nil {
 			return result, err
 		}
-	}else {
+	} else {
 		if err := Db.Self.Model(&latestAction{}).Where("sid = ?", uid).Find(&tmpRecord).Error; err != nil {
 			return result, err
 		}
@@ -683,11 +703,11 @@ func ReminderBox(uid string, limit int, offset int) ([]ReminderInfo, error) {
 		}
 		if v.Confirm == 3 {
 			tmpInfo := ReminderInfo{
-				Status:           v.Confirm, //提示被拒绝啦！
-				RequirementId:    v.RequirementsId,
-				Title:            v.Title,
-				ConfirmTime:      timestamp2json(v.ConfirmTime),
-				RedPoint:         redPoint(v.SenderReadStatus),
+				Status:        v.Confirm, //提示被拒绝啦！
+				RequirementId: v.RequirementsId,
+				Title:         v.Title,
+				ConfirmTime:   timestamp2json(v.ConfirmTime),
+				RedPoint:      redPoint(v.SenderReadStatus),
 			}
 			result = append(result, tmpInfo)
 		}
@@ -695,7 +715,7 @@ func ReminderBox(uid string, limit int, offset int) ([]ReminderInfo, error) {
 	return result, nil
 }
 
-func redPoint (status int) bool {
+func redPoint(status int) bool {
 	if status == 1 {
 		return true
 	}
@@ -756,9 +776,9 @@ func FindApplicationIdFromRequirementIdAndReceiverId(requirementId int, receiver
 	}
 	return applicationId
 }
- */
+*/
 
-//更新阅读状态　type1 = 1 ->　收件人已读 || type1 = 2 -> 发件人已读, true -> 本人 false ->　非本人
+//更新阅读状态　type1 = 1 ->　收件人已读 type1 = 2 -> 发件人已读, true -> 本人 false ->　非本人/并不存在
 func ReminderChangeStatus(applicationId int, sid string, type1 int) (error, bool) {
 	if type1 == 1 {
 		var num int
@@ -779,7 +799,7 @@ func ReminderChangeStatus(applicationId int, sid string, type1 int) (error, bool
 	if type1 == 2 {
 		var num int
 		if len(sid) != 0 {
-			if err := Db.Self.Model(&application{}).Where(application{ApplicationId: applicationId}).Where(application{SenderSid:sid}).Count(&num).Error; err != nil {
+			if err := Db.Self.Model(&application{}).Where(application{ApplicationId: applicationId}).Where(application{SenderSid: sid}).Count(&num).Error; err != nil {
 				return err, false
 			}
 			if num == 0 {
