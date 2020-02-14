@@ -2,9 +2,12 @@ package middleware
 
 import (
 	"fmt"
+	"github.com/2020-LonelyPlanet-backend/miniProject/handler"
+	error2 "github.com/2020-LonelyPlanet-backend/miniProject/pkg/error"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"log"
+<<<<<<< HEAD
 	"time"
 )
 
@@ -16,27 +19,46 @@ type jwtClaims struct {
 var (
 	key        = "miniProject" //salt
 	ExpireTime = 3600          //token expire time
+=======
+)
+
+var (
+	key = "miniProject" //salt
+	//ExpireTime = 3600          //token expire time
+>>>>>>> 423d511db086ad041c2b524f496681aff9d450ec
 )
 
 func JwtAAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenStr := c.Request.Header.Get("token")
 		if tokenStr == "" {
+<<<<<<< HEAD
 			c.String(401, "token invalid")
 			c.Abort()
+=======
+			handler.ErrTokenInvalid(c, error2.TokenInvalid)
+>>>>>>> 423d511db086ad041c2b524f496681aff9d450ec
 			//跳转登录界面
 			return
 		}
 		token, err := verifyToken(tokenStr)
 		if token == nil || err != nil {
+<<<<<<< HEAD
 			c.String(401, "token invalid")
 			c.Abort()
+=======
+			handler.ErrTokenInvalid(c, error2.TokenInvalid)
+>>>>>>> 423d511db086ad041c2b524f496681aff9d450ec
 			//跳转登录页面
 			return
 		}
 		if !token.Valid {
+<<<<<<< HEAD
 			c.String(401, "token invalid")
 			c.Abort()
+=======
+			handler.ErrTokenInvalid(c, error2.TokenInvalid)
+>>>>>>> 423d511db086ad041c2b524f496681aff9d450ec
 			//跳转登录页面
 			return
 		}
@@ -46,6 +68,7 @@ func JwtAAuth() gin.HandlerFunc {
 	}
 }
 
+/*
 func ProduceToken(uid string) string {
 	//id, _ := strconv.Atoi(uid)
 	claims := &jwtClaims{
@@ -72,8 +95,12 @@ func genToken(claims jwtClaims) (string, error) {
 	}
 	return signedToken, nil
 }
+*/
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 423d511db086ad041c2b524f496681aff9d450ec
 func verifyToken(verifyToken string) (*jwt.Token, error) {
 	token, err := jwt.Parse(verifyToken, func(token *jwt.Token) (i interface{}, err error) {
 		return []byte(key), nil

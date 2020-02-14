@@ -59,23 +59,23 @@ func DebunksDelete(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(200,gin.H{
+	c.JSON(200, gin.H{
 		"message": "success",
 	})
 }
 
 func DebunksHistory(c *gin.Context) {
 	uid := c.GetString("uid")
-	history,err := model.HistoryDebunk(uid)
+	history, err := model.HistoryDebunk(uid)
 	if err != nil {
 		log.Println(err)
-		c.JSON(400,gin.H{
-			"message":"请求失败",
+		c.JSON(400, gin.H{
+			"message": "请求失败",
 		})
 		return
 	}
-	c.JSON(200,gin.H{
-		"message":"请求成功",
+	c.JSON(200, gin.H{
+		"message": "请求成功",
 		"history": history,
 	})
 	return

@@ -1,0 +1,6 @@
+.idea
+*.swp
+dbFunc_test.go
+miniFunc_test.go
+outputImprove_test.go
+studentInfo_test.go
