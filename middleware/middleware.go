@@ -1,88 +1,112 @@
 package middleware
 
 import (
-	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"net/http"
-	"strconv"
-	"time"
-
-	//"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"log"
+	"time"
 )
 
 type jwtClaims struct {
 	jwt.StandardClaims
-	UserID int `json:"user_id"`
+	Uid string	`json:"uid"`
 }
 
 var (
-	secret = "miniProject"  //salt
-	ExpireTime = 3600  //token expire time
+	key        = "miniProject" //salt
+	ExpireTime = 3600          //token expire time
 )
 
 func JwtAAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token := c.Request.Header.Get("token")
-	/*	if token == "" {
-			c.JSON(http.StatusForbidden, gin.H{
-				"status": "403",
-				"msg": "token Invalid",
-			})
-		}*/
-
-		//refresh(c)
-		claim, err := verifyToken(token)
-		if err != nil {
-			c.String(http.StatusBadRequest,err.Error())
+		tokenStr := c.Request.Header.Get("token")
+		if tokenStr == "" {
+			c.String(401, "token invalid")
 			c.Abort()
+			//跳转登录界面
+			return
 		}
-		c.Set("uid",claim.UserID)
-		//fmt.Println(token)
-		fmt.Println(claim.UserID)
+		token, err := verifyToken(tokenStr)
+		if token == nil || err != nil {
+			c.String(401, "token invalid")
+			c.Abort()
+			//跳转登录页面
+			return
+		}
+		if !token.Valid {
+			c.String(401, "token invalid")
+			c.Abort()
+			//跳转登录页面
+			return
+		}
+		claim := token.Claims
+		c.Set("uid", claim.(jwt.MapClaims)["uid"])
 		c.Next()
-		//c.Abort()
 	}
 }
 
 func ProduceToken(uid string) string {
-	id,_ := strconv.Atoi(uid)
+	//id, _ := strconv.Atoi(uid)
 	claims := &jwtClaims{
-		UserID: id,
+		Uid: uid,
 	}
 	claims.IssuedAt = time.Now().Unix()
 	claims.ExpiresAt = time.Now().Add(time.Second * time.Duration(ExpireTime)).Unix()
-	singedToken, err := genToken(claims)
-	fmt.Println(singedToken,err)
+	singedToken, err := genToken(*claims)
+	//fmt.Println(singedToken, err)
+	if err != nil {
+		log.Print("produceToken err:")
+		fmt.Println(err)
+		return ""
+	}
 	return singedToken
 }
 
-func genToken(claims *jwtClaims) (string, error) {
+func genToken(claims jwtClaims) (string, error) {
+	//token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, err := token.SignedString([]byte(secret))
+	signedToken, err := token.SignedString([]byte(key))
 	if err != nil {
 		return "", err
 	}
 	return signedToken, nil
 }
 
-func verifyToken(varifyToken string) (*jwtClaims, error) {
-	token, err := jwt.ParseWithClaims(varifyToken, &jwtClaims{}, func(token *jwt.Token) (i interface{}, err error) {
-		return []byte(secret), nil
+
+func verifyToken(verifyToken string) (*jwt.Token, error) {
+	token, err := jwt.Parse(verifyToken, func(token *jwt.Token) (i interface{}, err error) {
+		return []byte(key), nil
 	})
 	if err != nil {
-		return nil,err
+		log.Print("verifyToken err:")
+		fmt.Println(err)
+		return nil, err
 	}
-	claims, ok := token.Claims.(*jwtClaims)
-	if !ok {
-		return nil, errors.New("token Invalid")
-	}
-	if err := token.Claims.Valid(); err != nil {
-		return nil, errors.New("token Invalid")
-	}
-	return claims, nil
+	return token, nil
 }
+
+/*
+func verifyToken(varifyToken string) (*jwtClaims, error) {
+	token, err := jwt.ParseWithClaims(varifyToken, &jwtClaims{}, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			//log.Println(ok)
+			log.Panicln("unexpected signing method")
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return token, nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if claims, ok := token.Claims.(*jwtClaims); ok && token.Valid {
+		return claims, nil
+	}
+	return nil, err
+}
+*/
 
 /*
 func refresh(c *gin.Context) {

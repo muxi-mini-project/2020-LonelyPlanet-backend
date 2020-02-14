@@ -15,7 +15,7 @@ func CraeteDebunk(debunk Debunk) (secretid string,err error) {
 }
 
 func DeleteDebunk(secretid int) (err error) {
-	if err := Db.Self.Model(&Debunk{}).Where(Debunk{Debunkid:secretid}).Delete(Debunk{}) ; err != nil {
+	if err := Db.Self.Model(&Debunk{}).Where(Debunk{Debunkid:secretid}).Delete(Debunk{}).Error ; err != nil {
 		return nil
 	}
 	return err
