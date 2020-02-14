@@ -1,6 +1,5 @@
 .idea
 *.swp
-docs
 dbFunc_test.go
 miniFunc_test.go
 outputImprove_test.go
