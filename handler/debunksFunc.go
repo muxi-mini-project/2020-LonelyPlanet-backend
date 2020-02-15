@@ -39,23 +39,23 @@ func DebunksCreate(c *gin.Context) {
 
 func DebunksDelete(c *gin.Context) {
 	var err1 error
-	secretid , _ := strconv.Atoi(c.Query("secretId"))
+	secretid, _ := strconv.Atoi(c.Query("secretId"))
 	err := model.DeleteDebunk(secretid)
-	comment_history,_ := model.HistoryComment(secretid)
-	for _,data := range comment_history {
-		err1 =model.DeleteComment(data.CommentId)
+	comment_history, _ := model.HistoryComment(secretid)
+	for _, data := range comment_history {
+		err1 = model.DeleteComment(data.CommentId)
 	}
 	if err != nil {
 		log.Println(err)
-		c.JSON(400,gin.H{
-			"message":"删除秘密失败",
+		c.JSON(400, gin.H{
+			"message": "删除秘密失败",
 		})
 		return
 	}
-	if err1	!= nil {
+	if err1 != nil {
 		log.Println(err1)
-		c.JSON(400,gin.H{
-			"message":"删除秘密失败",
+		c.JSON(400, gin.H{
+			"message": "删除秘密失败",
 		})
 		return
 	}

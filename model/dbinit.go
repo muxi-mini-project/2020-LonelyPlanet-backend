@@ -8,7 +8,6 @@ import (
 	"os"
 )
 
-
 const dns = "root:huanglingyun0130@tcp(localhost:3306)/mini_project"
 
 type Database struct {
