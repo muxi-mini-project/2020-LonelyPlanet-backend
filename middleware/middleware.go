@@ -2,34 +2,41 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/2020-LonelyPlanet-backend/miniProject/handler"
-	error2 "github.com/2020-LonelyPlanet-backend/miniProject/pkg/error"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"log"
+	"time"
 )
 
+type jwtClaims struct {
+	jwt.StandardClaims
+	Uid string	`json:"uid"`
+}
+
 var (
-	key = "miniProject" //salt
-	//ExpireTime = 3600          //token expire time
+	key        = "miniProject" //salt
+	ExpireTime = 3600          //token expire time
 )
 
 func JwtAAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenStr := c.Request.Header.Get("token")
 		if tokenStr == "" {
-			handler.ErrTokenInvalid(c, error2.TokenInvalid)
+			c.String(401, "token invalid")
+			c.Abort()
 			//跳转登录界面
 			return
 		}
 		token, err := verifyToken(tokenStr)
 		if token == nil || err != nil {
-			handler.ErrTokenInvalid(c, error2.TokenInvalid)
+			c.String(401, "token invalid")
+			c.Abort()
 			//跳转登录页面
 			return
 		}
 		if !token.Valid {
-			handler.ErrTokenInvalid(c, error2.TokenInvalid)
+			c.String(401, "token invalid")
+			c.Abort()
 			//跳转登录页面
 			return
 		}
@@ -39,7 +46,6 @@ func JwtAAuth() gin.HandlerFunc {
 	}
 }
 
-/*
 func ProduceToken(uid string) string {
 	//id, _ := strconv.Atoi(uid)
 	claims := &jwtClaims{
@@ -66,7 +72,7 @@ func genToken(claims jwtClaims) (string, error) {
 	}
 	return signedToken, nil
 }
-*/
+
 
 func verifyToken(verifyToken string) (*jwt.Token, error) {
 	token, err := jwt.Parse(verifyToken, func(token *jwt.Token) (i interface{}, err error) {
