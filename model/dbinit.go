@@ -25,6 +25,7 @@ func getDatabase() (*gorm.DB, error) {
 		db = nil
 	}
 	db.SingularTable(true)
+	db.LogMode(true)
 	return db, err
 }
 

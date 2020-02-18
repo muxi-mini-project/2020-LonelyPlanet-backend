@@ -191,49 +191,79 @@ func RequirementFind(type1 int, sid string, date int, timeFrom int, timeEnd int,
 	var result []requirementInSquare
 
 	var tmpRecord latestAction
-	if offset == 0 {
-		tmpRecord.RandNum = getRandomNum()
-		tmpRecord.LatestTime = NowTimeStampStr()
-		err := RecordAction(sid, tmpRecord.RandNum, tmpRecord.LatestTime)
-		if err != nil {
-			return result, err
-		}
-	} else {
-		if err := Db.Self.Model(&latestAction{}).Where("sid = ?", sid).Find(&tmpRecord).Error; err != nil {
-			return result, err
-		}
-	}
 
-	db = db.Model(&Requirements{}).Where(Requirements{Type: type1}).Where("sender_sid != ?", sid).Where("status = 1")
-
-	if len(place) != 0 {
-		for _, v := range place {
-			db = db.Model(&Requirements{}).Or(Requirements{Place: v})
+	var wg sync.WaitGroup
+	wg.Add(2)
+	var err1 error
+	go func() {
+		if offset == 0 {
+			tmpRecord.RandNum = getRandomNum()
+			tmpRecord.LatestTime = NowTimeStampStr()
+			err := RecordAction(sid, tmpRecord.RandNum, tmpRecord.LatestTime)
+			err1 = err
+		} else {
+			err1 = Db.Self.Model(&latestAction{}).Where("sid = ?", sid).Find(&tmpRecord).Error
 		}
-	}
+		wg.Done()
+	}()
 
-	if len(tag) != 0 {
-		for _, v := range tag {
-			db = db.Model(&Requirements{}).Or(Requirements{Tag: v})
-		}
-	}
-	/*
-		if len(date) != 0 {
-			db = db.Where("date & ? != 0 ", date)
-		}
-	*/
-	if date != 0 {
-		//tmp,_ := strconv.Atoi(date)
-		db = db.Where("date & ? > 128 ", date)
-	}
+	go func() {
+		db = db.Model(&Requirements{}).Where(Requirements{Type: type1}).Where("sender_sid != ?", sid).Where("status = 1")
 
-	//var result []requirements
-	//改
-	if timeFrom != 0 {
-		db = db.Where(" time_from - ? >= 1", timeFrom)
-	}
-	if timeEnd != 0 {
-		db = db.Where(" ? - time_end >= 1", timeEnd)
+		if len(place) != 0 {
+			var sql2 string
+			for i, v := range place {
+				if i == 0 {
+					sql2 += "(place = "+strconv.Itoa(v)
+					continue
+				}
+				sql2 += " or place = "+strconv.Itoa(v)
+			}
+			sql2 += ")"
+			db = db.Model(&Requirements{}).Where(sql2)
+		}
+
+
+		if len(tag) != 0 {
+			var sql1 string
+			for i, v := range tag {
+				if i == 0 {
+					sql1 += "(tag = "+strconv.Itoa(v)
+					continue
+				}
+				sql1 += " or tag = "+strconv.Itoa(v)
+			}
+			sql1 += ")"
+			db = db.Model(&Requirements{}).Where(sql1)
+		}
+
+
+
+		/*
+			if len(date) != 0 {
+				db = db.Where("date & ? != 0 ", date)
+			}
+		*/
+		if date != 0 {
+			//tmp,_ := strconv.Atoi(date)
+			db = db.Where("date & ? > 128 ", date)
+		}
+
+		//var result []requirements
+		//改
+		if timeFrom != 0 {
+			db = db.Where(" time_from - ? >= 1", timeFrom)
+		}
+		if timeEnd != 0 {
+			db = db.Where(" ? - time_end >= 1", timeEnd)
+		}
+		wg.Done()
+	}()
+
+	wg.Wait()
+
+	if err1 != nil {
+		return result, err1
 	}
 
 	db = db.Where("post_time < ?", tmpRecord.LatestTime) //确保分页准确
@@ -570,7 +600,7 @@ func SolveApplication(applicationId int, status int, sid string) (error, int) {
 	if err := Db.Self.Model(&application{}).Where(application{ApplicationId: applicationId}).Find(&tmp).Error; err != nil {
 		log.Print("SolveApplication err")
 		fmt.Println(err)
-		return nil, 0
+		return err, 0
 	}
 
 	if tmp.Confirm == 4 {

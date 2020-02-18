@@ -177,7 +177,8 @@ func Square(c *gin.Context) {
 			ErrBadRequest(c, error2.ParamBadRequest)
 			return
 		}
-		if tmpCondition.Date < 1000000 || tmpCondition.Date > 11111111 {
+		if tmpCondition.Date < 128 || tmpCondition.Date > 255 {
+			fmt.Println(tmpCondition.Date)
 			ErrBadRequest(c, error2.ParamBadRequest)
 			return
 		}

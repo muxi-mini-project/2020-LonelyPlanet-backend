@@ -1,8 +1,8 @@
 package model
 
 import (
-	log "github.com/sirupsen/logrus"
-	"golang.org/x/tools/go/ssa/interp/testdata/src/fmt"
+	"fmt"
+	"log"
 	"strconv"
 	"time"
 )
