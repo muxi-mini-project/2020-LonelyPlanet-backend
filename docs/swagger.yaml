@@ -241,6 +241,11 @@ paths:
         name: application_id
         required: true
         type: string
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -279,6 +284,11 @@ paths:
       - description: 请求id
         in: path
         name: application_id
+        required: true
+        type: string
+      - description: token
+        in: header
+        name: token
         required: true
         type: string
       produces:
@@ -321,6 +331,11 @@ paths:
         name: page
         required: true
         type: string
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -361,7 +376,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"msg":"success"}'
+          description: '{"msg":"success", "token": string}'
           schema:
             $ref: '#/definitions/model.Res'
         "400":
@@ -395,6 +410,11 @@ paths:
       - description: 当前请求页数，从0开始
         in: query
         name: page
+        required: true
+        type: string
+      - description: token
+        in: header
+        name: token
         required: true
         type: string
       produces:
@@ -433,6 +453,11 @@ paths:
         name: application_id
         required: true
         type: string
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -462,6 +487,12 @@ paths:
       consumes:
       - application/json
       description: 根据返回值来判断是否显示提醒的小红点
+      parameters:
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -495,6 +526,11 @@ paths:
       - description: 删除需求的id，会在别的api中给出
         in: path
         name: requirement_id
+        required: true
+        type: string
+      - description: token
+        in: header
+        name: token
         required: true
         type: string
       produces:
@@ -538,6 +574,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/handler.contractWay'
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -578,6 +619,11 @@ paths:
         name: page
         required: true
         type: string
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -614,6 +660,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/model.Requirements'
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -680,6 +731,11 @@ paths:
         in: query
         name: date
         type: string
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -713,6 +769,11 @@ paths:
       - description: 查看需求的id，会在别的api中给出
         in: path
         name: requirement_id
+        required: true
+        type: string
+      - description: token
+        in: header
+        name: token
         required: true
         type: string
       produces:
@@ -751,6 +812,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/handler.verifyInfo'
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
       produces:
       - application/json
       responses:

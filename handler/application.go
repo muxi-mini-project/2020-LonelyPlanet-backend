@@ -14,6 +14,7 @@ import (
 // @Produce json
 // @Param status query string true "状态"
 // @Param application_id path string true "请求id"
+// @Param token header string true "token"
 // @Success 200 {object} model.Res "{"msg":"success"}/{"msg":"需求已经被删除了!"}/{"msg":"已经处理过了!"}"
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
@@ -80,6 +81,7 @@ func SolveApplication(c *gin.Context) {
 // @Produce json
 // @Param limit query string true "每页数量"
 // @Param page query string true "当前请求页数，从0开始"
+// @Param token header string true "token"
 // @Success 200 {object} model.ApplicationView "{"msg":"success", "num":数量, "applications":数组，其中包含每个的id}，其中red_point字段是用来表示是否未读，即单条信息是否显示小红点"
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"

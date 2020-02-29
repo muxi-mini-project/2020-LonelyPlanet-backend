@@ -12,6 +12,7 @@ import (
 // @Tags remind
 // @Accept json
 // @Produce json
+// @Param token header string true "token"
 // @Success 200 {object} model.RemindEx "{"msg":"success", "existence":"true/false"}"
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
@@ -51,6 +52,7 @@ func NightInformationExistence(c *gin.Context) {
 // @Produce json
 // @Param limit query string true "每页数量"
 // @Param page query string true "当前请求页数，从0开始"
+// @Param token header string true "token"
 // @Success 200 {object} model.RemindBox "{"msg":"success", "num":数量, "content":数组，其中包含每个的id， 其中confirm是用来判断显示的内容是否带有小眼睛图标， 2为接受，3为拒绝，其中red_point字段是用来表示是否未读，即单条信息是否显示小红点}"
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
@@ -98,6 +100,7 @@ func ReminderBox(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param application_id path string true "用户已查看的申请id, 在别的api中给出"
+// @Param token header string true "token"
 // @Success 200 {object} model.Res "{"msg":"success"} 成功"
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
@@ -135,6 +138,7 @@ func UpdateRemindStatus1(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param application_id path string true "用户已查看的申请id, 在别的api中给出"
+// @Param token header string true "token"
 // @Success 200 {object} model.Res "{"msg":"success"} 成功"
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"

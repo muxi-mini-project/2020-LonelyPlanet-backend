@@ -63,7 +63,7 @@ func UserLogin(c *gin.Context) {
 	//c.SetCookie("token", produceToken(user.Sid), 3600, "/", "mini", true, false)
 	//c.Header("token", produceToken(user.Sid))
 	c.JSON(200, gin.H{
-		"msg": "success",
+		"msg":   "success",
 		"token": produceToken(user.Sid),
 	})
 	return
@@ -166,6 +166,7 @@ func genToken(claims jwtClaims) (string, error) {
 // @Accept json
 // @Produce json
 // @Param verifyInfo body handler.verifyInfo true "修改的板块和信息"
+// @Param token header string true "token"
 // @Success 200 {object} model.Res "{"msg":"success"} 成功"
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"

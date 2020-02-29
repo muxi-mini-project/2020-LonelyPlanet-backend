@@ -123,6 +123,7 @@ func detectParamSelectTime(from, end int) bool {
 // @Param time_from query string false "起始时间"
 // @Param time_end query string false "终止时间"
 // @Param date query string false "复合条件的日期筛选条件，如果有整合为8位字符串'1xxxxxxx'，最低位为周一"
+// @Param token header string true "token"
 // @Success 200 {object} model.Square "{"msg":"get result successful", "num":数量, "content":数组，其中包含每个的id},若数量为零msg:'none'"
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
@@ -268,6 +269,7 @@ func Square(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param requirement_id path string true "查看需求的id，会在别的api中给出"
+// @Param token header string true "token"
 // @Success 200 {object} model.ViewRequirement "{"msg":"success", "content":数组，其中包含每个的id},若该需求被删除 msg:'不见啦'"
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
@@ -304,6 +306,7 @@ func ViewRequirement(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param requirement_id path string true "删除需求的id，会在别的api中给出"
+// @Param token header string true "token"
 // @Success 200 {object} model.Res "{"msg":"success"} 成功"
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
@@ -364,6 +367,7 @@ func detectPostRequirement(tmp model.Requirements) bool {
 // @Accept json
 // @Produce json
 // @Param requirement body model.Requirements true "新发布的需求详情"
+// @Param token header string true "token"
 // @Success 200 {object} model.Res "{"msg":"success"} 成功 {"msg":"requirement already exist."} 提示重复发布需求了"
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
@@ -427,6 +431,7 @@ func PostRequirement(c *gin.Context) {
 // @Produce json
 // @Param limit query string true "每页数量"
 // @Param page query string true "当前请求页数，从0开始"
+// @Param token header string true "token"
 // @Success 200 {object} model.ViewHistoryRequirement "{"msg":"success", "num":数量, "history":数组，其中包含每个的id}"
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
@@ -468,6 +473,7 @@ func HistoryRequirement(c *gin.Context) {
 // @Produce json
 // @Param requirement_id path string true "申请需求的id，会在别的api中给出"
 // @Param contractWay body handler.contractWay true "发布的需求详情"
+// @Param token header string true "token"
 // @Success 200 {object} model.Res "{"msg":"success"}/{"msg":"不能申请自己的需求!"}/{"msg":"已经申请过了!"}"
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"

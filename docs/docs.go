@@ -45,6 +45,13 @@ var doc = `{
                         "name": "application_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -101,6 +108,13 @@ var doc = `{
                         "description": "请求id",
                         "name": "application_id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -159,6 +173,13 @@ var doc = `{
                         "name": "page",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -215,7 +236,7 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"msg\":\"success\"}",
+                        "description": "{\"msg\":\"success\", \"token\": string}",
                         "schema": {
                             "$ref": "#/definitions/model.Res"
                         }
@@ -268,6 +289,13 @@ var doc = `{
                         "name": "page",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -318,6 +346,13 @@ var doc = `{
                         "name": "application_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -361,6 +396,15 @@ var doc = `{
                     "remind"
                 ],
                 "summary": "查询是否显示小红点",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "{\"msg\":\"success\", \"existence\":\"true/false\"}",
@@ -418,6 +462,13 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/handler.contractWay"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -475,6 +526,13 @@ var doc = `{
                         "name": "page",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -527,6 +585,13 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/model.Requirements"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -621,6 +686,13 @@ var doc = `{
                         "description": "复合条件的日期筛选条件，如果有整合为8位字符串'1xxxxxxx'，最低位为周一",
                         "name": "date",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -671,6 +743,13 @@ var doc = `{
                         "name": "requirement_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -720,6 +799,13 @@ var doc = `{
                         "description": "删除需求的id，会在别的api中给出",
                         "name": "requirement_id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -773,6 +859,13 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/handler.verifyInfo"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
