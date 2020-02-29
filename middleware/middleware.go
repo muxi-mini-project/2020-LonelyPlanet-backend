@@ -10,7 +10,7 @@ import (
 
 type jwtClaims struct {
 	jwt.StandardClaims
-	Uid string	`json:"uid"`
+	Uid string `json:"uid"`
 }
 
 var (
@@ -72,7 +72,6 @@ func genToken(claims jwtClaims) (string, error) {
 	}
 	return signedToken, nil
 }
-
 
 func verifyToken(verifyToken string) (*jwt.Token, error) {
 	token, err := jwt.Parse(verifyToken, func(token *jwt.Token) (i interface{}, err error) {

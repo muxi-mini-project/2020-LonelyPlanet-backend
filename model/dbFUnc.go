@@ -214,30 +214,27 @@ func RequirementFind(type1 int, sid string, date int, timeFrom int, timeEnd int,
 			var sql2 string
 			for i, v := range place {
 				if i == 0 {
-					sql2 += "(place = "+strconv.Itoa(v)
+					sql2 += "(place = " + strconv.Itoa(v)
 					continue
 				}
-				sql2 += " or place = "+strconv.Itoa(v)
+				sql2 += " or place = " + strconv.Itoa(v)
 			}
 			sql2 += ")"
 			db = db.Model(&Requirements{}).Where(sql2)
 		}
 
-
 		if len(tag) != 0 {
 			var sql1 string
 			for i, v := range tag {
 				if i == 0 {
-					sql1 += "(tag = "+strconv.Itoa(v)
+					sql1 += "(tag = " + strconv.Itoa(v)
 					continue
 				}
-				sql1 += " or tag = "+strconv.Itoa(v)
+				sql1 += " or tag = " + strconv.Itoa(v)
 			}
 			sql1 += ")"
 			db = db.Model(&Requirements{}).Where(sql1)
 		}
-
-
 
 		/*
 			if len(date) != 0 {

@@ -23,7 +23,7 @@ type verifyInfo struct {
 // @Accept json
 // @Produce json
 // @Param loginInfo body model.LoginInfo true "学号和密码"
-// @Success 200 {object} model.Res "{"msg":"success"}"
+// @Success 200 {object} model.Res "{"msg":"success", "token": string}"
 // @Failure 401 {object} error.Error "{"error_code":"20001", "message":"Password or account wrong."} 登录失败, {"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
 // @Failure 500 {object} error.Error "{"error_code":"30001", "message":"Fail."} 失败"
@@ -61,9 +61,10 @@ func UserLogin(c *gin.Context) {
 	}
 
 	//c.SetCookie("token", produceToken(user.Sid), 3600, "/", "mini", true, false)
-	c.Header("token", produceToken(user.Sid))
+	//c.Header("token", produceToken(user.Sid))
 	c.JSON(200, gin.H{
 		"msg": "success",
+		"token": produceToken(user.Sid),
 	})
 	return
 }
