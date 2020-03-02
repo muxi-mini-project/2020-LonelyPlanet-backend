@@ -67,7 +67,7 @@
                 }
             }
         },
-        "/application/solve/{application_id}/": {
+        "/application/solve/:application_id/": {
             "put": {
                 "description": "根据请求Id来处理请求，id别的api会给出，通过状态status来处理请求，2为接受，3为拒绝",
                 "consumes": [
@@ -101,6 +101,15 @@
                         "name": "token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "description": "联系方式和附加信息",
+                        "name": "AcceptApplication",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AcceptApplication"
+                        }
                     }
                 ],
                 "responses": {
@@ -418,6 +427,63 @@
                 }
             }
         },
+        "/requirement/:requirement_id/": {
+            "delete": {
+                "description": "根据id来删除特定的需求",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "requirement"
+                ],
+                "summary": "删除已发布的需求",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "删除需求的id，会在别的api中给出",
+                        "name": "requirement_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"msg\":\"success\"} 成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.Res"
+                        }
+                    },
+                    "400": {
+                        "description": "{\"error_code\":\"00001\", \"message\":\"Fail.\"} or {\"error_code\":\"00002\", \"message\":\"Lack Param Or Param Not Satisfiable.\"}",
+                        "schema": {
+                            "$ref": "#/definitions/error.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "{\"error_code\":\"10001\", \"message\":\"Token Invalid.\"} 身份认证失败 重新登录",
+                        "schema": {
+                            "$ref": "#/definitions/error.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"error_code\":\"30001\", \"message\":\"Fail.\"} 失败",
+                        "schema": {
+                            "$ref": "#/definitions/error.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/requirement/application/:requirement_id/": {
             "post": {
                 "description": "根据id来申请特定的需求",
@@ -440,12 +506,12 @@
                         "required": true
                     },
                     {
-                        "description": "发布的需求详情",
-                        "name": "contractWay",
+                        "description": "联系方式和附加信息",
+                        "name": "application",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.contractWay"
+                            "$ref": "#/definitions/model.Application"
                         }
                     },
                     {
@@ -609,7 +675,7 @@
         },
         "/requirement/square/": {
             "get": {
-                "description": "给出用户的筛选条件，返回若干请求",
+                "description": "给出用户的筛选条件，返回若干需求",
                 "consumes": [
                     "application/json"
                 ],
@@ -708,7 +774,7 @@
                 }
             }
         },
-        "/requirement/view/{requirement_id}/": {
+        "/requirement/view/:requirement_id/": {
             "get": {
                 "description": "根据id来查看特定的需求",
                 "consumes": [
@@ -742,63 +808,6 @@
                         "description": "{\"msg\":\"success\", \"content\":数组，其中包含每个的id},若该需求被删除 msg:'不见啦'",
                         "schema": {
                             "$ref": "#/definitions/model.ViewRequirement"
-                        }
-                    },
-                    "400": {
-                        "description": "{\"error_code\":\"00001\", \"message\":\"Fail.\"} or {\"error_code\":\"00002\", \"message\":\"Lack Param Or Param Not Satisfiable.\"}",
-                        "schema": {
-                            "$ref": "#/definitions/error.Error"
-                        }
-                    },
-                    "401": {
-                        "description": "{\"error_code\":\"10001\", \"message\":\"Token Invalid.\"} 身份认证失败 重新登录",
-                        "schema": {
-                            "$ref": "#/definitions/error.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "{\"error_code\":\"30001\", \"message\":\"Fail.\"} 失败",
-                        "schema": {
-                            "$ref": "#/definitions/error.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/requirement/{requirement_id}/": {
-            "delete": {
-                "description": "根据id来删除特定的需求",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "requirement"
-                ],
-                "summary": "删除已发布的需求",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "删除需求的id，会在别的api中给出",
-                        "name": "requirement_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "token",
-                        "name": "token",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "{\"msg\":\"success\"} 成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.Res"
                         }
                     },
                     "400": {
@@ -880,6 +889,56 @@
                     }
                 }
             }
+        },
+        "/user/info/": {
+            "get": {
+                "description": "显示用户信息，点击“我的”和“修改信息”的时候调用",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "显示用户信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.MyInformation"
+                        }
+                    },
+                    "400": {
+                        "description": "{\"error_code\":\"00001\", \"message\":\"Fail.\"} or {\"error_code\":\"00002\", \"message\":\"Lack Param Or Param Not Satisfiable.\"}",
+                        "schema": {
+                            "$ref": "#/definitions/error.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "{\"error_code\":\"10001\", \"message\":\"Token Invalid.\"} 身份认证失败 重新登录",
+                        "schema": {
+                            "$ref": "#/definitions/error.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"error_code\":\"30001\", \"message\":\"Fail.\"} 失败",
+                        "schema": {
+                            "$ref": "#/definitions/error.Error"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -894,17 +953,6 @@
                 }
             }
         },
-        "handler.contractWay": {
-            "type": "object",
-            "properties": {
-                "contract_way": {
-                    "type": "string"
-                },
-                "contract_way_type": {
-                    "type": "string"
-                }
-            }
-        },
         "handler.verifyInfo": {
             "type": "object",
             "properties": {
@@ -912,6 +960,38 @@
                     "type": "string"
                 },
                 "verify_item": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.AcceptApplication": {
+            "type": "object",
+            "properties": {
+                "contact_way": {
+                    "description": "联系方式[qq, tel]",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "content": {
+                    "description": "附加信息",
+                    "type": "string"
+                }
+            }
+        },
+        "model.Application": {
+            "type": "object",
+            "properties": {
+                "contact_way": {
+                    "description": "联系方式[qq, tel]",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "content": {
+                    "description": "附加信息",
                     "type": "string"
                 }
             }
@@ -961,6 +1041,32 @@
                 }
             }
         },
+        "model.MyInformation": {
+            "type": "object",
+            "properties": {
+                "college": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "grade": {
+                    "type": "string"
+                },
+                "msg": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "portrait": {
+                    "type": "integer"
+                },
+                "sid": {
+                    "type": "string"
+                }
+            }
+        },
         "model.RemindBox": {
             "type": "object",
             "properties": {
@@ -999,9 +1105,14 @@
                     "type": "string"
                 },
                 "contact_way": {
-                    "type": "string"
+                    "description": "需求者联系方式",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
-                "contact_way_type": {
+                "content": {
+                    "description": "附加信息",
                     "type": "string"
                 },
                 "gender": {
@@ -1037,13 +1148,11 @@
                     "type": "string"
                 },
                 "place": {
+                    "description": "RequirePeopleNum int    `json:\"require_people_num\"`",
                     "type": "string"
                 },
                 "post_time": {
                     "type": "string"
-                },
-                "require_people_num": {
-                    "type": "integer"
                 },
                 "sender_nick_name": {
                     "type": "string"
@@ -1071,12 +1180,6 @@
         "model.Requirements": {
             "type": "object",
             "properties": {
-                "contact_way": {
-                    "type": "string"
-                },
-                "contact_way_type": {
-                    "type": "string"
-                },
                 "content": {
                     "type": "string"
                 },
@@ -1084,13 +1187,11 @@
                     "type": "integer"
                 },
                 "place": {
+                    "description": "RequirePeopleNum int    `gorm:\"require_people_num\" json:\"require_people_num\"`",
                     "type": "integer"
                 },
                 "post_time": {
                     "type": "string"
-                },
-                "require_people_num": {
-                    "type": "integer"
                 },
                 "requirement_id": {
                     "type": "integer"
@@ -1147,9 +1248,14 @@
                     "type": "string"
                 },
                 "contact_way": {
-                    "type": "string"
+                    "description": "联系方式[qq, tel]",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
-                "contact_way_type": {
+                "content": {
+                    "description": "附加信息",
                     "type": "string"
                 },
                 "gender": {

@@ -104,6 +104,17 @@ func getRandomString(l int) string {
 	return string(result)
 }
 
+// @Summary 显示用户信息
+// @Description 显示用户信息，点击“我的”和“修改信息”的时候调用
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param token header string true "token"
+// @Success 200 {object} model.MyInformation "成功"
+// @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
+// @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
+// @Failure 500 {object} error.Error "{"error_code":"30001", "message":"Fail."} 失败"
+// @Router /user/info/ [get]
 func Homepage(c *gin.Context) {
 	uid := c.GetString("uid")
 	tmpUser, err := model.FindUser(uid)
@@ -114,7 +125,7 @@ func Homepage(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"msg":      "Success",
 		"sid":      tmpUser.Sid,
-		"nickName": tmpUser.NickName,
+		"nickname": tmpUser.NickName,
 		"college":  tmpUser.College,
 		"gender":   tmpUser.Gender,
 		"grade":    tmpUser.Grade,

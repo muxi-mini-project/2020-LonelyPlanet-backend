@@ -22,18 +22,22 @@ type reminders struct {
 */
 
 type application struct {
-	ApplicationId      int    `gorm:"application_id" json:"application_id"`
-	ReceiverSid        string `gorm:"receiver_sid"　json:"-"`
-	SenderSid          string `gorm:"sender_sid" json:"-"`
-	RequirementsId     int    `gorm:"requirements_id" json:"requirements_id"`
-	Confirm            int    `gorm:"default:1" json:"-"`
-	ContactWayType     string `gorm:"contact_way_type" json:"contact_way_type"`
-	ContactWay         string `gorm:"contact_way" json:"contact_way"`
-	SenderReadStatus   int    `gorm:"default:1" json:"-"`
-	ReceiverReadStatus int    `gorm:"default:1" json:"-"`
-	SendTime           string `gorm:"send_time" json:"send_time"`
-	ConfirmTime        string `gorm:"confirm_time" json:"confirm_time"`
-	Title              string `gorm:"title" json:"title"`
+	ApplicationId       int    `gorm:"application_id" json:"application_id"`
+	ReceiverSid         string `gorm:"receiver_sid"　json:"-"`
+	SenderSid           string `gorm:"sender_sid" json:"-"`
+	RequirementsId      int    `gorm:"requirements_id" json:"requirements_id"`
+	Confirm             int    `gorm:"default:1" json:"-"`
+	SenderReadStatus    int    `gorm:"default:1" json:"-"`
+	ReceiverReadStatus  int    `gorm:"default:1" json:"-"`
+	SendTime            string `gorm:"send_time" json:"send_time"`
+	ConfirmTime         string `gorm:"confirm_time" json:"confirm_time"`
+	Title               string `gorm:"title" json:"title"`
+	SenderContactWay1   string `gorm:"sender_contact_way1" `  //申请人qq
+	SenderContactWay2   string `gorm:"sender_contact_way2" `  //申请人tel
+	ReceiverContactWay1 string `gorm:"receiver_contact_way1"` //发布需求者qq
+	ReceiverContactWay2 string `gorm:"receiver_contact_way2"` //发布需求者tel
+	Addition1           string `gorm:"addition1"`             //申请者附加信息
+	Addition2           string `gorm:"addition2"`             //需求者附加信息
 }
 
 type latestAction struct {
@@ -310,18 +314,18 @@ func CreatRequirement(requirements Requirements) error {
 }
 
 type Requirement struct {
-	SenderNickName   string `json:"sender_nick_name"`
-	SenderPortrait   int    `json:"sender_portrait"`
-	Title            string `json:"title"`
-	Content          string `json:"content"`
-	PostTime         string `json:"post_time"`
-	Date             string `json:"date"`
-	TimeFrom         int    `json:"time_from"`
-	TimeEnd          int    `json:"time_end"`
-	RequirePeopleNum int    `json:"require_people_num"`
-	Place            string `json:"place"`
-	Tag              string `json:"tag"`
-	Type             string `json:"type"`
+	SenderNickName string `json:"sender_nick_name"`
+	SenderPortrait int    `json:"sender_portrait"`
+	Title          string `json:"title"`
+	Content        string `json:"content"`
+	PostTime       string `json:"post_time"`
+	Date           string `json:"date"`
+	TimeFrom       int    `json:"time_from"`
+	TimeEnd        int    `json:"time_end"`
+	//RequirePeopleNum int    `json:"require_people_num"`
+	Place string `json:"place"`
+	Tag   string `json:"tag"`
+	Type  string `json:"type"`
 }
 
 //假：还存在，即未被删除
@@ -351,7 +355,7 @@ func RequirementInfo(requirementId int) (Requirement, bool, error) {
 	info.TimeFrom = tmpInfo.TimeFrom
 	info.TimeEnd = tmpInfo.TimeEnd
 	info.PostTime = timestamp2json(tmpInfo.PostTime)
-	info.RequirePeopleNum = tmpInfo.RequirePeopleNum
+	//info.RequirePeopleNum = tmpInfo.RequirePeopleNum
 	return info, false, nil
 }
 
@@ -383,7 +387,7 @@ func HistoryRequirementFind(uid string, offset int, limit int) ([]HistoryRequire
 }
 
 //int: 4: 申请的自己的需求 3: 已经申请过了 2: 申请的需求不存在 1: 成功 0: 未操作
-func RequirementApply(uid string, requirementId int, contractWayType string, contractWay string) (int, error) {
+func RequirementApply(uid string, requirementId int, contractWay1 string, contractWay2 string, addition string) (int, error) {
 	tmpInfo, err := GetInfoFromRequirementId(requirementId)
 	if err != nil {
 		return 2, err
@@ -392,14 +396,15 @@ func RequirementApply(uid string, requirementId int, contractWayType string, con
 		return 4, nil
 	}
 	tmpApply := application{
-		SenderSid:      uid,
-		ReceiverSid:    tmpInfo.SenderSid,
-		RequirementsId: requirementId,
-		Confirm:        1,
-		ContactWayType: contractWayType,
-		ContactWay:     contractWay,
-		SendTime:       NowTimeStampStr(),
-		Title:          tmpInfo.Title,
+		ReceiverSid:       tmpInfo.SenderSid,
+		SenderSid:         uid,
+		RequirementsId:    requirementId,
+		Confirm:           1,
+		SendTime:          NowTimeStampStr(),
+		Title:             tmpInfo.Title,
+		SenderContactWay1: contractWay1,
+		SenderContactWay2: contractWay2,
+		Addition1:         addition, //附加信息
 	}
 
 	var num int
@@ -509,20 +514,6 @@ func ViewAllUnsolvedApplication(uid string) ([]application, error) {
 }
 */
 
-type ViewApplicationInfo struct {
-	ApplicationId  int    `json:"application_id"`
-	SenderNickname string `json:"sender_nickname"`
-	RequirementsId int    `json:"requirements_id"`
-	College        string `json:"college"`
-	SendTime       string `json:"send_time"`
-	ContactWayType string `json:"contact_way_type"`
-	ContactWay     string `json:"contact_way"`
-	Title          string `json:"title"`
-	Gender         string `json:"gender"`
-	Grade          string `json:"grade"`
-	RedPoint       bool   `json:"red_point"`
-}
-
 func ViewAllApplication(uid string, offset int, limit int) ([]ViewApplicationInfo, error) {
 	var tmpApplication []application
 	var result []ViewApplicationInfo
@@ -553,12 +544,12 @@ func ViewAllApplication(uid string, offset int, limit int) ([]ViewApplicationInf
 			RequirementsId: v.RequirementsId,
 			College:        tmpUser.College,
 			SendTime:       timestamp2json(v.SendTime),
-			ContactWayType: v.ContactWayType,
-			ContactWay:     v.ContactWay,
 			Title:          v.Title,
 			Gender:         tmpUser.Gender,
 			Grade:          tmpUser.Grade,
 			RedPoint:       redPoint(v.ReceiverReadStatus),
+			ContactWay:     []string{v.SenderContactWay1, v.SenderContactWay2},
+			Content:        v.Addition1,
 		}
 		result = append(result, tmpResult)
 	}
@@ -591,7 +582,7 @@ func ViewApplication(applicationId int, uid string) (ViewApply, error) {//
 */
 
 //int: 4 ->已删除 3 -> 非本人操作 2 ->已处理 1 -> 成功 0 -> 无操作
-func SolveApplication(applicationId int, status int, sid string) (error, int) {
+func SolveApplication(applicationId int, status int, sid string, addtion AcceptApplication) (error, int) {
 	var tmp application
 	//排除了恶意application_id
 	if err := Db.Self.Model(&application{}).Where(application{ApplicationId: applicationId}).Find(&tmp).Error; err != nil {
@@ -611,6 +602,9 @@ func SolveApplication(applicationId int, status int, sid string) (error, int) {
 	tmp.ApplicationId = applicationId
 	tmp.Confirm = status
 	tmp.ConfirmTime = NowTimeStampStr()
+	tmp.ReceiverContactWay1 = addtion.ContactWay[0]
+	tmp.ReceiverContactWay2 = addtion.ContactWay[1]
+	tmp.Addition2 = addtion.Content
 	if err := Db.Self.Model(&application{}).Where(application{ApplicationId: tmp.ApplicationId}).Update(tmp).Error; err != nil {
 		log.Print("SolveApplication err")
 		fmt.Println(err)
@@ -631,41 +625,58 @@ func SolveApplication(applicationId int, status int, sid string) (error, int) {
 		}
 	*/
 	/*
-		if err := Db.Self.Model(&application{}).Where(application{ApplicationId: applicationId}).Find(&tmp).Error; err != nil {
-				log.Print("SolveApplication err")
-			fmt.Println(err)
-			return err
+				if err := Db.Self.Model(&application{}).Where(application{ApplicationId: applicationId}).Find(&tmp).Error; err != nil {
+						log.Print("SolveApplication err")
+					fmt.Println(err)
+					return err
+				}
+				tmpInfo := GetInfoFromRequirementId(tmp.RequirementsId)
+				newRemind := reminders{
+					RemindInfoId: tmpInfo.RequirementsId,
+					ReceiverSid:  tmpInfo.SenderSid,
+					Type:         1,
+					ReaderStatus: 0,
+					Title:        tmpInfo.Title,
+					ReceiveTime:  NowTime(),
+				}
+				if err := Db.Self.Model(&reminders{}).Create(&newRemind).Error; err != nil {
+					log.Print("Creat new reminder fail")
+					fmt.Println(err)
+		func ReminderAdd(remindInfoId int, receiverId string, Tpye int, title string) {
+			tmpReminder := reminders{
+				RemindInfoId: remindInfoId,
+				ReceiverSid:  receiverId,
+				Type:         Tpye,
+				ReaderStatus: 0,
+				Title:        title,
+				ReceiveTime:  NowTime(),
+			}
+			if err := Db.Self.Model(&reminders{}).Create(&tmpReminder).Error; err != nil {
+				log.Print("ReminderAdd err")
+				fmt.Println(err)
+				return
+			}
+			return
 		}
-		tmpInfo := GetInfoFromRequirementId(tmp.RequirementsId)
-		newRemind := reminders{
-			RemindInfoId: tmpInfo.RequirementsId,
-			ReceiverSid:  tmpInfo.SenderSid,
-			Type:         1,
-			ReaderStatus: 0,
-			Title:        tmpInfo.Title,
-			ReceiveTime:  NowTime(),
-		}
-		if err := Db.Self.Model(&reminders{}).Create(&newRemind).Error; err != nil {
-			log.Print("Creat new reminder fail")
-			fmt.Println(err)
-			return err
-		}
+
+					return err
+				}
 	*/
 	return nil, 1
 }
 
 type ReminderInfo struct {
-	Status           int    `json:"status"`
-	RequirementId    int    `json:"requirement_id"`
-	Title            string `json:"title"`
-	ConfirmTime      string `json:"confirm_time"`
-	ContactWayType   string `json:"contact_way_type"`
-	ContactWay       string `json:"contact_way"`
-	ReceiverNickName string `json:"nick_name"`
-	College          string `json:"college"`
-	Gender           string `json:"gender"`
-	Grade            string `json:"grade"`
-	RedPoint         bool   `json:"red_point"`
+	Status           int      `json:"status"`
+	RequirementId    int      `json:"requirement_id"`
+	Title            string   `json:"title"`
+	ConfirmTime      string   `json:"confirm_time"`
+	ContactWay       []string `json:"contact_way"` //需求者联系方式
+	Content          string   `json:"content"`     //附加信息
+	ReceiverNickName string   `json:"nick_name"`
+	College          string   `json:"college"`
+	Gender           string   `json:"gender"`
+	Grade            string   `json:"grade"`
+	RedPoint         bool     `json:"red_point"`
 }
 
 func ReminderBox(uid string, limit int, offset int) ([]ReminderInfo, error) {
@@ -714,12 +725,14 @@ func ReminderBox(uid string, limit int, offset int) ([]ReminderInfo, error) {
 		}
 		if v.Confirm == 2 {
 			tmpInfo := ReminderInfo{
-				Status:           v.Confirm, //通过是否来通知前端所显示的内容是否带有小眼睛图标
-				RequirementId:    v.RequirementsId,
-				Title:            v.Title,
-				ConfirmTime:      timestamp2json(v.ConfirmTime),
-				ContactWayType:   tmpRequirement.ContactWayType,
-				ContactWay:       tmpRequirement.ContactWay,
+				Status:        v.Confirm, //通过是否来通知前端所显示的内容是否带有小眼睛图标
+				RequirementId: v.RequirementsId,
+				Title:         v.Title,
+				ConfirmTime:   timestamp2json(v.ConfirmTime),
+				//ContactWayType:   tmpRequirement.ContactWayType,
+				//ContactWay:       tmpRequirement.ContactWay,
+				ContactWay:       []string{v.ReceiverContactWay1, v.ReceiverContactWay2},
+				Content:          v.Addition2,
 				ReceiverNickName: tmpUserInfo.NickName,
 				College:          tmpUserInfo.College,
 				Gender:           tmpUserInfo.Gender,

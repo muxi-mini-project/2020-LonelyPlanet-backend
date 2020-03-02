@@ -15,11 +15,12 @@ import (
 // @Param status query string true "状态"
 // @Param application_id path string true "请求id"
 // @Param token header string true "token"
+// @Param AcceptApplication body model.AcceptApplication true "联系方式和附加信息"
 // @Success 200 {object} model.Res "{"msg":"success"}/{"msg":"需求已经被删除了!"}/{"msg":"已经处理过了!"}"
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
 // @Failure 500 {object} error.Error "{"error_code":"30001", "message":"Fail."} 失败"
-// @Router /application/solve/{application_id}/ [put]
+// @Router /application/solve/:application_id/ [put]
 func SolveApplication(c *gin.Context) {
 	uid := c.GetString("uid")
 	status, err := strconv.Atoi(c.Query("status")) //2->接受　3->拒绝
@@ -42,7 +43,16 @@ func SolveApplication(c *gin.Context) {
 		return
 	}
 
-	err, flag := model.SolveApplication(applicationId, status, uid)
+	var tmpContent model.AcceptApplication
+	if status == 2 {
+		err := c.BindJSON(&tmpContent)
+		if err != nil || len(tmpContent.ContactWay) != 2 {
+			ErrBadRequest(c, error2.ParamBadRequest)
+			return
+		}
+	}
+
+	err, flag := model.SolveApplication(applicationId, status, uid, tmpContent)
 	if err != nil {
 		ErrServerError(c, error2.ServerError)
 		return

@@ -20,11 +20,6 @@ type condition struct {
 	Page     int
 }
 
-type contractWay struct {
-	ContractWayType string `json:"contract_way_type"`
-	ContractWay     string `json:"contract_way"`
-}
-
 func detectParamSelect(tmp condition, tag []int, place []int) bool {
 	if tmp.TypeOne == 1 {
 		if len(tag) != 0 {
@@ -111,7 +106,7 @@ func detectParamSelectTime(from, end int) bool {
 }
 
 // @Summary 需求广场
-// @Description 给出用户的筛选条件，返回若干请求
+// @Description 给出用户的筛选条件，返回若干需求
 // @Tags requirement
 // @Accept json
 // @Produce json
@@ -159,7 +154,7 @@ func Square(c *gin.Context) {
 			return
 		}
 	}
-	if len(c.Query("time_from")) == 0 {
+	if len(c.Query("time_from")) == 1 {
 		tmpCondition.TimeFrom = 0
 	}
 	if len(c.Query("time_end")) != 0 {
@@ -169,7 +164,7 @@ func Square(c *gin.Context) {
 			return
 		}
 	}
-	if len(c.Query("time_end")) == 0 {
+	if len(c.Query("time_end")) == 24 {
 		tmpCondition.TimeEnd = 0
 	}
 	if len(c.Query("date")) != 0 {
@@ -274,7 +269,7 @@ func Square(c *gin.Context) {
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
 // @Failure 500 {object} error.Error "{"error_code":"30001", "message":"Fail."} 失败"
-// @Router /requirement/view/{requirement_id}/ [get]
+// @Router /requirement/view/:requirement_id/ [get]
 func ViewRequirement(c *gin.Context) {
 	if len(c.Param("requirement_id")) == 0 {
 		ErrBadRequest(c, error2.ParamBadRequest)
@@ -311,7 +306,7 @@ func ViewRequirement(c *gin.Context) {
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
 // @Failure 500 {object} error.Error "{"error_code":"30001", "message":"Fail."} 失败"
-// @Router /requirement/{requirement_id}/ [delete]
+// @Router /requirement/:requirement_id/ [delete]
 func DeleteRequirement(c *gin.Context) {
 	if len(c.Param("requirement_id")) == 0 {
 		ErrBadRequest(c, error2.ParamBadRequest)
@@ -341,11 +336,11 @@ func DeleteRequirement(c *gin.Context) {
 }
 
 func detectPostRequirement(tmp model.Requirements) bool {
-	if tmp.TimeEnd == 0 || tmp.TimeFrom == 0 || tmp.Date == 0 || len(tmp.Title) == 0 || len(tmp.Content) == 0 || len(tmp.ContactWay) == 0 {
+	if tmp.TimeEnd == 0 || tmp.TimeFrom == 0 || tmp.Date == 0 || len(tmp.Title) == 0 || len(tmp.Content) == 0 {
 		return false
 	}
 	//各属性长度 限定 -> 确认
-	if len(tmp.ContactWayType) == 0 || len(tmp.ContactWayType) > 6 || tmp.Tag == 0 || tmp.Type == 0 || tmp.RequirementId != 0 || tmp.Status != 0 {
+	if tmp.Tag == 0 || tmp.Type == 0 || tmp.RequirementId != 0 || tmp.Status != 0 {
 		return false
 	}
 	//确定 是否 越界
@@ -472,7 +467,7 @@ func HistoryRequirement(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param requirement_id path string true "申请需求的id，会在别的api中给出"
-// @Param contractWay body handler.contractWay true "发布的需求详情"
+// @Param application body model.Application true "联系方式和附加信息"
 // @Param token header string true "token"
 // @Success 200 {object} model.Res "{"msg":"success"}/{"msg":"不能申请自己的需求!"}/{"msg":"已经申请过了!"}"
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
@@ -486,15 +481,20 @@ func ApplyRequirement(c *gin.Context) {
 		return
 	}
 	requirementId, _ := strconv.Atoi(c.Param("requirement_id"))
-	var tmpContract contractWay
+	var tmpContract model.Application
 	err := c.BindJSON(&tmpContract)
+	//fmt.Println(tmpContract)
+	if len(tmpContract.ContactWay) != 2 {
+		ErrBadRequest(c, error2.ParamBadRequest)
+		return
+	}
 	if err != nil {
 		log.Print("ApplyRequirement err")
 		fmt.Println(err)
 		ErrBadRequest(c, error2.ParamBadRequest)
 		return
 	}
-	flag, err := model.RequirementApply(uid, requirementId, tmpContract.ContractWayType, tmpContract.ContractWay)
+	flag, err := model.RequirementApply(uid, requirementId, tmpContract.ContactWay[0], tmpContract.ContactWay[1], tmpContract.Content)
 	if flag == 2 {
 		ErrBadRequest(c, error2.BadRequest)
 		return
