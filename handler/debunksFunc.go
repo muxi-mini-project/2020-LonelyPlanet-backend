@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/2020-LonelyPlanet-backend/miniProject/model"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -17,11 +18,13 @@ func DebunksCreate(c *gin.Context) {
 		})
 		return
 	}
+	sendtime := model.NowTime()
 	debunk := model.Debunk{
+		//Debunkid:  0,
 		SenderSid: uid,
 		Content:   data.Content,
 		Colour:    data.Colour,
-		SendTime:  data.SendTime,
+		SendTime:  sendtime,
 	}
 	secretid, err := model.CraeteDebunk(debunk)
 	if err != nil {
@@ -40,9 +43,16 @@ func DebunksCreate(c *gin.Context) {
 func DebunksDelete(c *gin.Context) {
 	var err1 error
 	secretid, _ := strconv.Atoi(c.Query("secretId"))
+	fmt.Println(secretid)
+	if !model.CheckDebunk(secretid) {
+		c.JSON(400,gin.H{
+			"message":"该秘密不存在",
+		})
+		return
+	}
 	err := model.DeleteDebunk(secretid)
-	comment_history, _ := model.HistoryComment(secretid)
-	for _, data := range comment_history {
+	commentHistory, _ := model.HistoryComment1(secretid)
+	for _, data := range commentHistory {
 		err1 = model.DeleteComment(data.CommentId)
 	}
 	if err != nil {
@@ -65,8 +75,10 @@ func DebunksDelete(c *gin.Context) {
 }
 
 func DebunksHistory(c *gin.Context) {
+	limit := 4
+	page,_ := strconv.Atoi(c.Query("page"))
 	uid := c.GetString("uid")
-	history, err := model.HistoryDebunk(uid)
+	history, err := model.HistoryDebunk(uid,page,limit)
 	if err != nil {
 		log.Println(err)
 		c.JSON(400, gin.H{
@@ -80,11 +92,10 @@ func DebunksHistory(c *gin.Context) {
 	})
 	return
 }
+
 func DebunksSquare(c *gin.Context) {
-	limit := 1
-	var secret []model.Debunk
-	page, _ := strconv.Atoi(c.Query("page"))
-	secret, err := model.SquareDebunk(page, limit)
+	var secret model.Debunk
+	secret, err := model.SquareDebunk()
 	if err != nil {
 		log.Println(err)
 		c.JSON(400, gin.H{
@@ -92,9 +103,11 @@ func DebunksSquare(c *gin.Context) {
 		})
 		return
 	}
+	i := model.RandNum(10)
 	c.JSON(200, gin.H{
 		"message": "请求成功",
-		"secrets": secret,
+		"secret": secret,
+		"number" : i,
 	})
 	return
 }

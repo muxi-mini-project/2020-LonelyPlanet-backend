@@ -1,12 +1,17 @@
 package model
 
 import (
+	"fmt"
+	"log"
+	"math/rand"
 	"strconv"
+	"time"
 )
 
 func CraeteDebunk(debunk Debunk) (secretid string, err error) {
-	if err := Db.Self.Model(&Debunk{}).Create(&debunk).Error; err != nil {
-		err = nil
+	err = Db.Self.Model(&Debunk{}).Create(&debunk).Error
+	if err != nil {
+		return
 	}
 	var secret Debunk
 	Db.Self.Model(&Debunk{}).Where(Debunk{Content: debunk.Content}).Find(&secret)
@@ -16,35 +21,66 @@ func CraeteDebunk(debunk Debunk) (secretid string, err error) {
 
 func DeleteDebunk(secretid int) (err error) {
 	if err := Db.Self.Model(&Debunk{}).Where(Debunk{Debunkid: secretid}).Delete(Debunk{}).Error; err != nil {
-		return nil
+		log.Println(err)
 	}
 	return err
 }
 
-func HistoryDebunk(uid string) (history []Debunk, err error) {
-	if err = Db.Self.Model(&Debunk{}).Where(Debunk{SenderSid: uid}).Find(&history).Error; err != nil {
-		err = nil
+func CheckDebunk(secretid int) bool {
+	var data Debunk
+	res := Db.Self.Model(&Debunk{}).Where(Debunk{Debunkid:secretid}).Find(&data)
+	if res.RecordNotFound() {
+		return false
+	}
+	return true
+}
+
+func HistoryDebunk(uid string, page int, limit int) (history []Debunk, err error) {
+	if err = Db.Self.Model(&Debunk{}).Where(Debunk{SenderSid: uid}).Limit(limit).Offset((page-1)*limit).Find(&history).Error; err != nil {
+		log.Println(err)
 	}
 	return
 }
 
-func SquareDebunk(page, limit int) (secret []Debunk, err error) {
-	if err = Db.Self.Model(&Debunk{}).Limit(limit).Offset((page - 1) * limit).Find(&secret).Error; err != nil {
-		err = nil
+func RandNum(i int) int {
+	rand.Seed(time.Now().UnixNano())
+	return rand.Intn(i-1)
+}
+
+func SquareDebunk() (secret Debunk, err error) {
+	var i  int
+	var secretid []int
+	if err = Db.Self.Model(&Debunk{}).Count(&i).Pluck("debunk_id",&secretid).Error; err != nil {
+		log.Println(err)
+		return
+	}
+	fmt.Println(i)
+	n := secretid[(RandNum(i))]
+	if err = Db.Self.Model(&Debunk{}).Where(Debunk{Debunkid:n}).Find(&secret).Error ; err != nil {
+		log.Println(err)
+		return
 	}
 	return
 }
 
 func CreateComment(comment Night_comment) (err error) {
 	if err = Db.Self.Model(&Night_comment{}).Create(&comment).Error; err != nil {
-		err = nil
+		return  err
 	}
 	return
 }
 
-func HistoryComment(secretid int) (history []Night_comment, err error) {
+func HistoryComment(secretid, page, limit int ) (history []Night_comment, err error) {
+	if err = Db.Self.Model(&Night_comment{}).Where(Night_comment{SecretId: secretid}).Limit(limit).Offset((page-1)*limit).Find(&history).Error; err != nil {
+		log.Println(err)
+		return
+	}
+	return
+}
+
+func HistoryComment1(secretid int) (history []Night_comment, err error) {
 	if err = Db.Self.Model(&Night_comment{}).Where(Night_comment{SecretId: secretid}).Find(&history).Error; err != nil {
-		err = nil
+		log.Println(err)
 		return
 	}
 	return
@@ -57,23 +93,36 @@ func DeleteComment(commentid int) (err error) {
 	return
 }
 
+func CheckComment(commentid int) bool {
+	var data Night_comment
+	res := Db.Self.Model(&Night_comment{}).Where(Night_comment{CommentId:commentid}).Find(&data)
+	if res.RecordNotFound() {
+		return false
+	}
+	return true
+}
+
 func GetSecretid(uid string) (secretid []int, err error) {
 	if err = Db.Self.Model(&Debunk{}).Where(Debunk{SenderSid: uid}).Pluck("debunk_id", &secretid).Error; err != nil {
-		err = nil
+		log.Println(err)
 		return
 	}
 	return
 }
 
 func GetCommentData(secretid []int) (commentdata []Commentdata, err error) {
-	var Commentdata []Commentdata
+	var Commentdata1 []Night_comment
+	var data2 Commentdata
 	for _, data := range secretid {
-		Commentdata = nil
-		if err := Db.Self.Model(&Night_comment{}).Select("comment_time,comment,secret_id").Where(Night_comment{SecretId: data}).Scan(&Commentdata).Error; err != nil {
-			err = nil
+		Commentdata1 = nil
+		if err := Db.Self.Model(&Night_comment{}).Where(Night_comment{SecretId: data}).Find(&Commentdata1).Error; err != nil {
+			log.Println(err)
 		}
-		for _, data1 := range Commentdata {
-			commentdata = append(commentdata, data1)
+		for _, data1 := range Commentdata1 {
+			data2.SecretId = data1.SecretId
+			data2.CommentTime = data1.CommentTime
+			data2.Comment = data1.Comment
+			commentdata = append(commentdata, data2)
 		}
 	}
 	return

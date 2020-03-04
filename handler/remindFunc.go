@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/2020-LonelyPlanet-backend/miniProject/model"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -9,6 +10,7 @@ import (
 func RemindNightRemindboxView(c *gin.Context) {
 	uid := c.GetString("uid")
 	secretid, err := model.GetSecretid(uid)
+	fmt.Println(secretid)
 	if err != nil {
 		log.Println(err)
 		c.JSON(400, gin.H{

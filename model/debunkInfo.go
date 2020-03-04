@@ -7,22 +7,22 @@ type DebunkInfo struct {
 }
 
 type Debunk struct {
-	Debunkid  int    `gorm:"debunk_id",json:"secret_id"`
-	Content   string `gorm:"content",json:"content"`
-	SendTime  string `gorm:"post_time",json:"send_time"`
-	SenderSid string `gorm:"sender_sid",json:"-"`
-	Colour    string `gorm:"colour",json:"colour"`
+	Debunkid  int    `gorm:"column:debunk_id",gorm:"AUTO_INCREMENT",json:"secret_id",json:"-"`
+	Content   string `gorm:"column:content",json:"content"`
+	SendTime  string `gorm:"column:post_time",json:"send_time"`
+	SenderSid string `gorm:"column:sender_sid",json:"-"`
+	Colour    string `gorm:"column:colour",json:"colour"`
 }
 
 type Night_comment struct {
-	CommentTime string `gorm:"comment_time",json:"comment_time"`
-	Comment     string `gorm:"content",json:"comment"`
-	SecretId    int    `gorm:"debunk_id",json:"-"`
-	CommentId   int    `gorm:"comment_id",json:"comment_id"`
+	CommentTime string `gorm:"column:comment_time",json:"-"`
+	Comment     string `gorm:"column:content",json:"comment"`
+	SecretId    int    `gorm:"column:debunk_id",json:"secret_id"`
+	CommentId   int    `gorm:"column:comment_id",gorm:"AUTO_INCREMENT",json:"-"`
 }
 
 type Commentdata struct {
-	CommentTime string `gorm:"comment_time",json:"comment_time"`
-	Comment     string `gorm:"comment",json:"comment"`
-	SecretId    int    `gorm:"secret_id",json:"secret_id"`
+	CommentTime string `gorm:"column:comment_time",json:"comment_time"`
+	Comment     string `gorm:"column:comment",json:"comment"`
+	SecretId    int    `gorm:"column:secret_id",json:"secret_id"`
 }
