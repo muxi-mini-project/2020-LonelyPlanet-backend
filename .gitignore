@@ -7,3 +7,4 @@ studentInfo_test.go
 go.mod
 go.sum
 nohup.out
+.DS_Store
