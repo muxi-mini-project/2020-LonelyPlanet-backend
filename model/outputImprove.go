@@ -128,7 +128,7 @@ func dateImprove(date string) string {
 			if len(result) == 0 {
 				result = date2(len(date) - i)
 			} else {
-				result = result + " " + date2(len(date)-i)
+				result = date2(len(date)-i) + " " + result
 			}
 		}
 	}

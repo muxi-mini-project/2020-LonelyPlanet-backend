@@ -25,64 +25,7 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/application/done/:application_id/": {
-            "post": {
-                "description": "更新申收件人阅读状态, 需要在用户在申请提醒中点击需求或者点击小眼睛或者直接处理请求的同时, 通过请求这条来更新状态, 如果可以希望可以根据是否已读来判断是否进行此次请求以减少请求次数",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "remind"
-                ],
-                "summary": "更新收件人阅读状态",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "用户已查看的申请id, 在别的api中给出",
-                        "name": "application_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "token",
-                        "name": "token",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "{\"msg\":\"success\"} 成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.Res"
-                        }
-                    },
-                    "400": {
-                        "description": "{\"error_code\":\"00001\", \"message\":\"Fail.\"} or {\"error_code\":\"00002\", \"message\":\"Lack Param Or Param Not Satisfiable.\"}",
-                        "schema": {
-                            "$ref": "#/definitions/error.Error"
-                        }
-                    },
-                    "401": {
-                        "description": "{\"error_code\":\"10001\", \"message\":\"Token Invalid.\"} 身份认证失败 重新登录",
-                        "schema": {
-                            "$ref": "#/definitions/error.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "{\"error_code\":\"30001\", \"message\":\"Fail.\"} 失败",
-                        "schema": {
-                            "$ref": "#/definitions/error.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/application/solve/:application_id/": {
+        "/application/:application_id/": {
             "put": {
                 "description": "根据请求Id来处理请求，id别的api会给出，通过状态status来处理请求，2为接受，3为拒绝",
                 "consumes": [
@@ -130,6 +73,63 @@ var doc = `{
                 "responses": {
                     "200": {
                         "description": "{\"msg\":\"success\"}/{\"msg\":\"需求已经被删除了!\"}/{\"msg\":\"已经处理过了!\"}",
+                        "schema": {
+                            "$ref": "#/definitions/model.Res"
+                        }
+                    },
+                    "400": {
+                        "description": "{\"error_code\":\"00001\", \"message\":\"Fail.\"} or {\"error_code\":\"00002\", \"message\":\"Lack Param Or Param Not Satisfiable.\"}",
+                        "schema": {
+                            "$ref": "#/definitions/error.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "{\"error_code\":\"10001\", \"message\":\"Token Invalid.\"} 身份认证失败 重新登录",
+                        "schema": {
+                            "$ref": "#/definitions/error.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"error_code\":\"30001\", \"message\":\"Fail.\"} 失败",
+                        "schema": {
+                            "$ref": "#/definitions/error.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/application/done/:application_id/": {
+            "post": {
+                "description": "更新申收件人阅读状态, 需要在用户在申请提醒中点击需求或者点击小眼睛或者直接处理请求的同时, 通过请求这条来更新状态, 如果可以希望可以根据是否已读来判断是否进行此次请求以减少请求次数",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "remind"
+                ],
+                "summary": "更新收件人阅读状态",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户已查看的申请id, 在别的api中给出",
+                        "name": "application_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"msg\":\"success\"} 成功",
                         "schema": {
                             "$ref": "#/definitions/model.Res"
                         }

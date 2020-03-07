@@ -25,7 +25,7 @@ func Init() {
 
 	Router.GET("/lonely_planet/v1/requirement/square/", handler.Square)                                 //白天需求广场，即筛选需求
 	Router.GET("/lonely_planet/v1/requirement/view/:requirement_id/", handler.ViewRequirement)          //查看特定的需求
-	Router.DELETE("/lonely_planet/requirement/:requirement_id/", handler.DeleteRequirement)             //删除需求
+	Router.DELETE("/lonely_planet/v1/requirement/:requirement_id/", handler.DeleteRequirement)          //删除需求
 	Router.PUT("/lonely_planet/v1/requirement/new/", handler.PostRequirement)                           //发布需求
 	Router.GET("/lonely_planet/v1/requirement/history/", handler.HistoryRequirement)                    //历史需求
 	Router.POST("/lonely_planet/v1/requirement/application/:requirement_id/", handler.ApplyRequirement) //申请需求

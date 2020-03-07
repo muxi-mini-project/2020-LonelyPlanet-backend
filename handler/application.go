@@ -20,7 +20,7 @@ import (
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"
 // @Failure 400 {object} error.Error "{"error_code":"00001", "message":"Fail."} or {"error_code":"00002", "message":"Lack Param Or Param Not Satisfiable."}"
 // @Failure 500 {object} error.Error "{"error_code":"30001", "message":"Fail."} 失败"
-// @Router /application/solve/:application_id/ [put]
+// @Router /application/:application_id/ [put]
 func SolveApplication(c *gin.Context) {
 	uid := c.GetString("uid")
 	status, err := strconv.Atoi(c.Query("status")) //2->接受　3->拒绝
