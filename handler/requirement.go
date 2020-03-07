@@ -83,7 +83,7 @@ func detectParamSelect(tmp condition, tag []int, place []int) bool {
 				}
 			}
 		}
-		return false
+		return true
 	}
 	return false
 }
@@ -361,7 +361,7 @@ func detectPostRequirement(tmp model.Requirements) bool {
 // @Tags requirement
 // @Accept json
 // @Produce json
-// @Param requirement body model.Requirements true "新发布的需求详情"
+// @Param requirement body model.NewRequirements true "新发布的需求详情"
 // @Param token header string true "token"
 // @Success 200 {object} model.Res "{"msg":"success"} 成功 {"msg":"requirement already exist."} 提示重复发布需求了"
 // @Failure 401 {object} error.Error "{"error_code":"10001", "message":"Token Invalid."} 身份认证失败 重新登录"

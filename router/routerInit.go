@@ -1,10 +1,12 @@
 package router
 
 import (
-	//_ "github.com/2020-LonelyPlanet-backend/miniProject/docs"
+	_ "github.com/2020-LonelyPlanet-backend/miniProject/docs"
 	"github.com/2020-LonelyPlanet-backend/miniProject/handler"
 	"github.com/2020-LonelyPlanet-backend/miniProject/middleware"
 	"github.com/gin-gonic/gin"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
 	//ginSwagger "github.com/swaggo/gin-swagger"
 	//"github.com/swaggo/gin-swagger/swaggerFiles"
 )
@@ -13,7 +15,7 @@ var Router *gin.Engine
 
 func Init() {
 	Router = gin.Default()
-	//Router.GET("/Swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	Router.GET("/Swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	Router.POST("/lonely_planet/v1/login/", handler.UserLogin) //用户登录
 	Router.Use(middleware.JwtAAuth())
@@ -23,7 +25,7 @@ func Init() {
 
 	Router.GET("/lonely_planet/v1/requirement/square/", handler.Square)                                 //白天需求广场，即筛选需求
 	Router.GET("/lonely_planet/v1/requirement/view/:requirement_id/", handler.ViewRequirement)          //查看特定的需求
-	Router.DELETE("/lonely_planet/requirement/:requirement_id/", handler.DeleteRequirement)          //删除需求
+	Router.DELETE("/lonely_planet/requirement/:requirement_id/", handler.DeleteRequirement)             //删除需求
 	Router.PUT("/lonely_planet/v1/requirement/new/", handler.PostRequirement)                           //发布需求
 	Router.GET("/lonely_planet/v1/requirement/history/", handler.HistoryRequirement)                    //历史需求
 	Router.POST("/lonely_planet/v1/requirement/application/:requirement_id/", handler.ApplyRequirement) //申请需求

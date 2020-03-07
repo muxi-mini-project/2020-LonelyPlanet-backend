@@ -51,6 +51,18 @@ type Requirements struct {
 	Status int `gorm:"default:1" json:"-"`
 }
 
+type NewRequirements struct {
+	Title    string `gorm:"title" json:"title"`
+	Content  string `gorm:"content" json:"content"`
+	PostTime string `gorm:"post_time" json:"post_time"`
+	Date     int    `gorm:"date" json:"date"`
+	TimeFrom int    `gorm:"time_form" json:"time_from"`
+	TimeEnd  int    `gorm:"time_end" json:"time_end"`
+	Place    int    `gorm:"place" json:"place"`
+	Tag      int    `gorm:"tag" json:"tag"`
+	Type     int    `gorm:"type" json:"type"`
+}
+
 type Res struct {
 	Msg string `json:"msg"`
 }
@@ -92,13 +104,14 @@ type RemindBox struct {
 type ViewApplicationInfo struct {
 	ApplicationId  int      `json:"application_id"`
 	SenderNickname string   `json:"sender_nickname"`
-	RequirementsId int      `json:"requirements_id"`
+	RequirementsId int      `json:"requirement_id"`
 	College        string   `json:"college"`
 	SendTime       string   `json:"send_time"`
 	Title          string   `json:"title"`
 	Gender         string   `json:"gender"`
 	Grade          string   `json:"grade"`
 	RedPoint       bool     `json:"red_point"`
+	Portrait       int      `json:"portrait"`    //头像
 	ContactWay     []string `json:"contact_way"` //联系方式[qq, tel]
 	Content        string   `json:"content"`     //附加信息
 }

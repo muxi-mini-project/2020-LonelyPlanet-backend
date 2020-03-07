@@ -25,7 +25,7 @@ type application struct {
 	ApplicationId       int    `gorm:"application_id" json:"application_id"`
 	ReceiverSid         string `gorm:"receiver_sid"　json:"-"`
 	SenderSid           string `gorm:"sender_sid" json:"-"`
-	RequirementsId      int    `gorm:"requirements_id" json:"requirements_id"`
+	RequirementId       int    `gorm:"column:requirements_id" json:"requirements_id"`
 	Confirm             int    `gorm:"default:1" json:"-"`
 	SenderReadStatus    int    `gorm:"default:1" json:"-"`
 	ReceiverReadStatus  int    `gorm:"default:1" json:"-"`
@@ -398,7 +398,7 @@ func RequirementApply(uid string, requirementId int, contractWay1 string, contra
 	tmpApply := application{
 		ReceiverSid:       tmpInfo.SenderSid,
 		SenderSid:         uid,
-		RequirementsId:    requirementId,
+		RequirementId:     requirementId,
 		Confirm:           1,
 		SendTime:          NowTimeStampStr(),
 		Title:             tmpInfo.Title,
@@ -408,7 +408,7 @@ func RequirementApply(uid string, requirementId int, contractWay1 string, contra
 	}
 
 	var num int
-	if err := Db.Self.Model(&application{}).Where(application{SenderSid: uid, RequirementsId: requirementId}).Count(&num).Error; err != nil {
+	if err := Db.Self.Model(&application{}).Where(application{SenderSid: uid, RequirementId: requirementId}).Count(&num).Error; err != nil {
 		return 0, err
 	}
 	if num != 0 {
@@ -447,7 +447,7 @@ func RequirementDelete(requirementId int, sid string) (error, bool) {
 	}()
 
 	go func() {
-		if err := Db.Self.Model(&application{}).Where(application{RequirementsId: requirementId}).Update(application{Confirm: 4}).Error; err != nil {
+		if err := Db.Self.Model(&application{}).Where(application{RequirementId: requirementId}).Update(application{Confirm: 4}).Error; err != nil {
 			log.Print("RequirementDelete err")
 			fmt.Println(err)
 			err2 = err
@@ -535,19 +535,21 @@ func ViewAllApplication(uid string, offset int, limit int) ([]ViewApplicationInf
 		fmt.Println(err)
 		return result, err
 	}
-	tmpUser, _ := FindUser(uid)
+
 	for _, v := range tmpApplication {
+		tmpUser, _ := FindUser(v.SenderSid)
 		//tmpApplicationInfo := GetInfoFromRequirementId(v.RequirementsId)
 		tmpResult := ViewApplicationInfo{
 			ApplicationId:  v.ApplicationId,
 			SenderNickname: tmpUser.NickName,
-			RequirementsId: v.RequirementsId,
+			RequirementsId: v.RequirementId,
 			College:        tmpUser.College,
 			SendTime:       timestamp2json(v.SendTime),
 			Title:          v.Title,
 			Gender:         tmpUser.Gender,
 			Grade:          tmpUser.Grade,
 			RedPoint:       redPoint(v.ReceiverReadStatus),
+			Portrait:       tmpUser.Portrait,
 			ContactWay:     []string{v.SenderContactWay1, v.SenderContactWay2},
 			Content:        v.Addition1,
 		}
@@ -713,7 +715,7 @@ func ReminderBox(uid string, limit int, offset int) ([]ReminderInfo, error) {
 			wg.Done()
 		}()
 		go func() {
-			tmpRequirement, err2 = GetInfoFromRequirementId(v.RequirementsId)
+			tmpRequirement, err2 = GetInfoFromRequirementId(v.RequirementId)
 			wg.Done()
 		}()
 		wg.Wait()
@@ -726,7 +728,7 @@ func ReminderBox(uid string, limit int, offset int) ([]ReminderInfo, error) {
 		if v.Confirm == 2 {
 			tmpInfo := ReminderInfo{
 				Status:        v.Confirm, //通过是否来通知前端所显示的内容是否带有小眼睛图标
-				RequirementId: v.RequirementsId,
+				RequirementId: v.RequirementId,
 				Title:         v.Title,
 				ConfirmTime:   timestamp2json(v.ConfirmTime),
 				//ContactWayType:   tmpRequirement.ContactWayType,
@@ -744,7 +746,7 @@ func ReminderBox(uid string, limit int, offset int) ([]ReminderInfo, error) {
 		if v.Confirm == 3 {
 			tmpInfo := ReminderInfo{
 				Status:        v.Confirm, //提示被拒绝啦！
-				RequirementId: v.RequirementsId,
+				RequirementId: v.RequirementId,
 				Title:         v.Title,
 				ConfirmTime:   timestamp2json(v.ConfirmTime),
 				RedPoint:      redPoint(v.SenderReadStatus),

@@ -10,10 +10,10 @@ import (
 
 func CommentCreate(c *gin.Context) {
 	var data model.Night_comment
-	secretid,_ := strconv.Atoi(c.Query("secretId"))
+	secretid, _ := strconv.Atoi(c.Query("secretId"))
 	if !model.CheckDebunk(secretid) {
-		c.JSON(400,gin.H{
-			"message":"该秘密不存在",
+		c.JSON(400, gin.H{
+			"message": "该秘密不存在",
 		})
 		return
 	}
@@ -42,9 +42,9 @@ func CommentCreate(c *gin.Context) {
 
 func CommentHistory(c *gin.Context) {
 	secretid, _ := strconv.Atoi(c.Query("secretId"))
-	page,_ := strconv.Atoi(c.Query("page"))
+	page, _ := strconv.Atoi(c.Query("page"))
 	limit := 3
-	history, err := model.HistoryComment(secretid,page,limit)
+	history, err := model.HistoryComment(secretid, page, limit)
 	if err != nil {
 		log.Println(err)
 		c.JSON(400, gin.H{
@@ -58,17 +58,17 @@ func CommentHistory(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "请求成功",
 		"history": history,
-		"num1": i1,
-		"num2": i2,
-		"num3": i3,
+		"num1":    i1,
+		"num2":    i2,
+		"num3":    i3,
 	})
 }
 
 func CommentDelete(c *gin.Context) {
 	commentid, _ := strconv.Atoi(c.Query("commentId"))
 	if !model.CheckComment(commentid) {
-		c.JSON(400,gin.H{
-			"message":"该评论不存在",
+		c.JSON(400, gin.H{
+			"message": "该评论不存在",
 		})
 		return
 	}

@@ -28,7 +28,7 @@ func DeleteDebunk(secretid int) (err error) {
 
 func CheckDebunk(secretid int) bool {
 	var data Debunk
-	res := Db.Self.Model(&Debunk{}).Where(Debunk{Debunkid:secretid}).Find(&data)
+	res := Db.Self.Model(&Debunk{}).Where(Debunk{Debunkid: secretid}).Find(&data)
 	if res.RecordNotFound() {
 		return false
 	}
@@ -36,7 +36,7 @@ func CheckDebunk(secretid int) bool {
 }
 
 func HistoryDebunk(uid string, page int, limit int) (history []Debunk, err error) {
-	if err = Db.Self.Model(&Debunk{}).Where(Debunk{SenderSid: uid}).Limit(limit).Offset((page-1)*limit).Find(&history).Error; err != nil {
+	if err = Db.Self.Model(&Debunk{}).Where(Debunk{SenderSid: uid}).Limit(limit).Offset((page - 1) * limit).Find(&history).Error; err != nil {
 		log.Println(err)
 	}
 	return
@@ -44,19 +44,19 @@ func HistoryDebunk(uid string, page int, limit int) (history []Debunk, err error
 
 func RandNum(i int) int {
 	rand.Seed(time.Now().UnixNano())
-	return rand.Intn(i-1)
+	return rand.Intn(i - 1)
 }
 
 func SquareDebunk() (secret Debunk, err error) {
-	var i  int
+	var i int
 	var secretid []int
-	if err = Db.Self.Model(&Debunk{}).Count(&i).Pluck("debunk_id",&secretid).Error; err != nil {
+	if err = Db.Self.Model(&Debunk{}).Count(&i).Pluck("debunk_id", &secretid).Error; err != nil {
 		log.Println(err)
 		return
 	}
 	fmt.Println(i)
 	n := secretid[(RandNum(i))]
-	if err = Db.Self.Model(&Debunk{}).Where(Debunk{Debunkid:n}).Find(&secret).Error ; err != nil {
+	if err = Db.Self.Model(&Debunk{}).Where(Debunk{Debunkid: n}).Find(&secret).Error; err != nil {
 		log.Println(err)
 		return
 	}
@@ -65,13 +65,13 @@ func SquareDebunk() (secret Debunk, err error) {
 
 func CreateComment(comment Night_comment) (err error) {
 	if err = Db.Self.Model(&Night_comment{}).Create(&comment).Error; err != nil {
-		return  err
+		return err
 	}
 	return
 }
 
-func HistoryComment(secretid, page, limit int ) (history []Night_comment, err error) {
-	if err = Db.Self.Model(&Night_comment{}).Where(Night_comment{SecretId: secretid}).Limit(limit).Offset((page-1)*limit).Find(&history).Error; err != nil {
+func HistoryComment(secretid, page, limit int) (history []Night_comment, err error) {
+	if err = Db.Self.Model(&Night_comment{}).Where(Night_comment{SecretId: secretid}).Limit(limit).Offset((page - 1) * limit).Find(&history).Error; err != nil {
 		log.Println(err)
 		return
 	}
@@ -95,7 +95,7 @@ func DeleteComment(commentid int) (err error) {
 
 func CheckComment(commentid int) bool {
 	var data Night_comment
-	res := Db.Self.Model(&Night_comment{}).Where(Night_comment{CommentId:commentid}).Find(&data)
+	res := Db.Self.Model(&Night_comment{}).Where(Night_comment{CommentId: commentid}).Find(&data)
 	if res.RecordNotFound() {
 		return false
 	}

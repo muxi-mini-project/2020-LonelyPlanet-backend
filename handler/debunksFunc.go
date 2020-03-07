@@ -45,8 +45,8 @@ func DebunksDelete(c *gin.Context) {
 	secretid, _ := strconv.Atoi(c.Query("secretId"))
 	fmt.Println(secretid)
 	if !model.CheckDebunk(secretid) {
-		c.JSON(400,gin.H{
-			"message":"该秘密不存在",
+		c.JSON(400, gin.H{
+			"message": "该秘密不存在",
 		})
 		return
 	}
@@ -76,9 +76,9 @@ func DebunksDelete(c *gin.Context) {
 
 func DebunksHistory(c *gin.Context) {
 	limit := 4
-	page,_ := strconv.Atoi(c.Query("page"))
+	page, _ := strconv.Atoi(c.Query("page"))
 	uid := c.GetString("uid")
-	history, err := model.HistoryDebunk(uid,page,limit)
+	history, err := model.HistoryDebunk(uid, page, limit)
 	if err != nil {
 		log.Println(err)
 		c.JSON(400, gin.H{
@@ -106,8 +106,8 @@ func DebunksSquare(c *gin.Context) {
 	i := model.RandNum(10)
 	c.JSON(200, gin.H{
 		"message": "请求成功",
-		"secret": secret,
-		"number" : i,
+		"secret":  secret,
+		"number":  i,
 	})
 	return
 }

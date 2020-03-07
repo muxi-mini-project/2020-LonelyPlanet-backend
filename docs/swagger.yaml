@@ -82,6 +82,27 @@ definitions:
       sid:
         type: string
     type: object
+  model.NewRequirements:
+    properties:
+      content:
+        type: string
+      date:
+        type: integer
+      place:
+        type: integer
+      post_time:
+        type: string
+      tag:
+        type: integer
+      time_end:
+        type: integer
+      time_from:
+        type: integer
+      title:
+        type: string
+      type:
+        type: integer
+    type: object
   model.RemindBox:
     properties:
       content:
@@ -155,30 +176,6 @@ definitions:
       type:
         type: string
     type: object
-  model.Requirements:
-    properties:
-      content:
-        type: string
-      date:
-        type: integer
-      place:
-        description: RequirePeopleNum int    `gorm:"require_people_num" json:"require_people_num"`
-        type: integer
-      post_time:
-        type: string
-      requirement_id:
-        type: integer
-      tag:
-        type: integer
-      time_end:
-        type: integer
-      time_from:
-        type: integer
-      title:
-        type: string
-      type:
-        type: integer
-    type: object
   model.Res:
     properties:
       msg:
@@ -213,9 +210,12 @@ definitions:
         type: string
       grade:
         type: string
+      portrait:
+        description: 头像
+        type: integer
       red_point:
         type: boolean
-      requirements_id:
+      requirement_id:
         type: integer
       send_time:
         type: string
@@ -699,7 +699,7 @@ paths:
         name: requirement
         required: true
         schema:
-          $ref: '#/definitions/model.Requirements'
+          $ref: '#/definitions/model.NewRequirements'
       - description: token
         in: header
         name: token
