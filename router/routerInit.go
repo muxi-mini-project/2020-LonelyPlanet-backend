@@ -44,7 +44,7 @@ func Init() {
 	//	Router.GET("/user/info/",handler.Homepage)
 	//	Router.POST("/user/changeInfo/",handler.ChangeInfo)
 	Router.POST("/lonely_planet/v1/secret/create/", handler.DebunksCreate)
-	Router.GET("lonely_planet/v1/secret/view/:secret_id/",handler.GetSecret)
+	Router.GET("/lonely_planet/v1/secret/view/:secret_id/",handler.GetSecret)
 	Router.DELETE("/lonely_planet/v1/secret/delete/:secret_id/", handler.DebunksDelete)
 	Router.GET("/lonely_planet/v1/secret/history/", handler.DebunksHistory)
 	Router.GET("/lonely_planet/v1/secret/square/", handler.DebunksSquare)
