@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/2020-LonelyPlanet-backend/miniProject/model"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -40,10 +39,25 @@ func DebunksCreate(c *gin.Context) {
 	})
 }
 
+func GetSecret(c *gin.Context) {
+	secretid, _ := strconv.Atoi(c.Query("secretId"))
+	secret,err := model.GetDebunk(secretid)
+	if err != nil {
+		c.JSON(400,gin.H{
+			"message":"获取秘密失败",
+		})
+		return
+	}
+	c.JSON(200,gin.H{
+		"message":"请求成功",
+		"secret":secret,
+	})
+}
+
 func DebunksDelete(c *gin.Context) {
 	var err1 error
 	secretid, _ := strconv.Atoi(c.Query("secretId"))
-	fmt.Println(secretid)
+	//fmt.Println(secretid)
 	if !model.CheckDebunk(secretid) {
 		c.JSON(400, gin.H{
 			"message": "该秘密不存在",
@@ -75,7 +89,7 @@ func DebunksDelete(c *gin.Context) {
 }
 
 func DebunksHistory(c *gin.Context) {
-	limit := 4
+	limit := 5
 	page, _ := strconv.Atoi(c.Query("page"))
 	uid := c.GetString("uid")
 	history, err := model.HistoryDebunk(uid, page, limit)
