@@ -16,8 +16,7 @@ type Database struct {
 var Db *Database
 
 func getDatabase() (*gorm.DB, error) {
-	dns := fmt.Sprintf("%s:%s@tcp(" +
-		"localhost:3306)/mini_project",
+	dns := fmt.Sprintf("%s:%s@tcp(114.249.244.39:3306)/mini_project",
 		"root",
 		"ccnuccnu")
 	//dns := fmt.Sprintf("%s:%s@tcp(localhost:3306)/mini_project", os.Getenv("DBUser"), os.Getenv("DBPassword"))
