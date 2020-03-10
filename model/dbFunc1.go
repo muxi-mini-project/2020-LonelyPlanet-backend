@@ -1,6 +1,5 @@
 package model
 
-
 import (
 	"fmt"
 	"log"
@@ -37,7 +36,7 @@ func CheckDebunk(secretid int) bool {
 }
 
 func GetDebunk(secretid int) (data Debunk, err error) {
-	if err := Db.Self.Model(&Debunk{}).Where(Debunk{Debunkid: secretid}).Find(&data).Error ; err != nil {
+	if err := Db.Self.Model(&Debunk{}).Where(Debunk{Debunkid: secretid}).Find(&data).Error; err != nil {
 		log.Println(err)
 	}
 	return
@@ -57,12 +56,12 @@ func RandNum(i int) int {
 
 func GetCommentHistory(history []Night_comment) (comment []Comment) {
 	var comment1 Comment
-	for _,data := range history {
+	for _, data := range history {
 		comment1 = Comment{
 			Night_comment: data,
 			Num:           RandNum(10),
 		}
-		comment = append(comment,comment1)
+		comment = append(comment, comment1)
 	}
 	return
 }
@@ -90,7 +89,7 @@ func CreateComment(comment Night_comment) (err error) {
 	return
 }
 
-func HistoryComment(secretid, page, limit int) (history []Night_comment,  err error) {
+func HistoryComment(secretid, page, limit int) (history []Night_comment, err error) {
 	if err = Db.Self.Model(&Night_comment{}).Where(Night_comment{SecretId: secretid}).Limit(limit).Offset((page - 1) * limit).Find(&history).Error; err != nil {
 		log.Println(err)
 		return

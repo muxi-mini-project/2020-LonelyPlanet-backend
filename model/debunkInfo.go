@@ -25,10 +25,10 @@ type Commentdata struct {
 	CommentTime string `gorm:"column:comment_time",json:"comment_time"`
 	Comment     string `gorm:"column:comment",json:"comment"`
 	SecretId    int    `gorm:"column:secret_id",json:"secret_id"`
-	Num 		int
+	Num         int
 }
 
 type Comment struct {
 	Night_comment
-	Num   int
+	Num int
 }

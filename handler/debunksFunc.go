@@ -41,16 +41,16 @@ func DebunksCreate(c *gin.Context) {
 
 func GetSecret(c *gin.Context) {
 	secretid, _ := strconv.Atoi(c.Query("secretId"))
-	secret,err := model.GetDebunk(secretid)
+	secret, err := model.GetDebunk(secretid)
 	if err != nil {
-		c.JSON(400,gin.H{
-			"message":"获取秘密失败",
+		c.JSON(400, gin.H{
+			"message": "获取秘密失败",
 		})
 		return
 	}
-	c.JSON(200,gin.H{
-		"message":"请求成功",
-		"secret":secret,
+	c.JSON(200, gin.H{
+		"message": "请求成功",
+		"secret":  secret,
 	})
 }
 
