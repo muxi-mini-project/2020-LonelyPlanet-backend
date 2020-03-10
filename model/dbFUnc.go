@@ -584,7 +584,7 @@ func ViewApplication(applicationId int, uid string) (ViewApply, error) {//
 */
 
 //int: 4 ->已删除 3 -> 非本人操作 2 ->已处理 1 -> 成功 0 -> 无操作
-func SolveApplication(applicationId int, status int, sid string, addtion AcceptApplication) (error, int) {
+func SolveApplication(applicationId int, status int, sid string, addition AcceptApplication) (error, int) {
 	var tmp application
 	//排除了恶意application_id
 	if err := Db.Self.Model(&application{}).Where(application{ApplicationId: applicationId}).Find(&tmp).Error; err != nil {
@@ -604,9 +604,12 @@ func SolveApplication(applicationId int, status int, sid string, addtion AcceptA
 	tmp.ApplicationId = applicationId
 	tmp.Confirm = status
 	tmp.ConfirmTime = NowTimeStampStr()
-	tmp.ReceiverContactWay1 = addtion.ContactWay[0]
-	tmp.ReceiverContactWay2 = addtion.ContactWay[1]
-	tmp.Addition2 = addtion.Content
+	if status == 2 {
+		tmp.ReceiverContactWay1 = addition.ContactWay[0]
+		tmp.ReceiverContactWay2 = addition.ContactWay[1]
+		tmp.Addition2 = addition.Content
+	}
+
 	if err := Db.Self.Model(&application{}).Where(application{ApplicationId: tmp.ApplicationId}).Update(tmp).Error; err != nil {
 		log.Print("SolveApplication err")
 		fmt.Println(err)
