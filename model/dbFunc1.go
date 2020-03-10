@@ -1,5 +1,6 @@
 package model
 
+
 import (
 	"fmt"
 	"log"
@@ -35,6 +36,13 @@ func CheckDebunk(secretid int) bool {
 	return true
 }
 
+func GetDebunk(secretid int) (data Debunk, err error) {
+	if err := Db.Self.Model(&Debunk{}).Where(Debunk{Debunkid: secretid}).Find(&data).Error ; err != nil {
+		log.Println(err)
+	}
+	return
+}
+
 func HistoryDebunk(uid string, page int, limit int) (history []Debunk, err error) {
 	if err = Db.Self.Model(&Debunk{}).Where(Debunk{SenderSid: uid}).Limit(limit).Offset((page - 1) * limit).Find(&history).Error; err != nil {
 		log.Println(err)
@@ -44,7 +52,19 @@ func HistoryDebunk(uid string, page int, limit int) (history []Debunk, err error
 
 func RandNum(i int) int {
 	rand.Seed(time.Now().UnixNano())
-	return rand.Intn(i - 1)
+	return rand.Intn(i)
+}
+
+func GetCommentHistory(history []Night_comment) (comment []Comment) {
+	var comment1 Comment
+	for _,data := range history {
+		comment1 = Comment{
+			Night_comment: data,
+			Num:           RandNum(10),
+		}
+		comment = append(comment,comment1)
+	}
+	return
 }
 
 func SquareDebunk() (secret Debunk, err error) {
@@ -70,7 +90,7 @@ func CreateComment(comment Night_comment) (err error) {
 	return
 }
 
-func HistoryComment(secretid, page, limit int) (history []Night_comment, err error) {
+func HistoryComment(secretid, page, limit int) (history []Night_comment,  err error) {
 	if err = Db.Self.Model(&Night_comment{}).Where(Night_comment{SecretId: secretid}).Limit(limit).Offset((page - 1) * limit).Find(&history).Error; err != nil {
 		log.Println(err)
 		return
@@ -122,6 +142,7 @@ func GetCommentData(secretid []int) (commentdata []Commentdata, err error) {
 			data2.SecretId = data1.SecretId
 			data2.CommentTime = data1.CommentTime
 			data2.Comment = data1.Comment
+			data2.Num = RandNum(10)
 			commentdata = append(commentdata, data2)
 		}
 	}

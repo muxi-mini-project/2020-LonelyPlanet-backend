@@ -43,7 +43,7 @@ func CommentCreate(c *gin.Context) {
 func CommentHistory(c *gin.Context) {
 	secretid, _ := strconv.Atoi(c.Query("secretId"))
 	page, _ := strconv.Atoi(c.Query("page"))
-	limit := 3
+	limit := 5
 	history, err := model.HistoryComment(secretid, page, limit)
 	if err != nil {
 		log.Println(err)
@@ -52,15 +52,10 @@ func CommentHistory(c *gin.Context) {
 		})
 		return
 	}
-	i1 := model.RandNum(10)
-	i2 := model.RandNum(10)
-	i3 := model.RandNum(10)
+	comment := model.GetCommentHistory(history)
 	c.JSON(200, gin.H{
 		"message": "请求成功",
-		"history": history,
-		"num1":    i1,
-		"num2":    i2,
-		"num3":    i3,
+		"history": comment,
 	})
 }
 
