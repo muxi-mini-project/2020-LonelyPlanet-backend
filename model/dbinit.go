@@ -5,6 +5,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"log"
+	"os"
 )
 
 const dns = "root:huanglingyun0130@tcp(localhost:3306)/mini_project"
@@ -16,9 +17,9 @@ type Database struct {
 var Db *Database
 
 func getDatabase() (*gorm.DB, error) {
-	dns := fmt.Sprintf("%s:%s@tcp(114.249.244.39:3306)/mini_project",
-		"root",
-		"ccnuccnu")
+	dns := fmt.Sprintf("%s:%s@tcp(47.97.74.180:3306)/mini_project",
+		os.Getenv("DBUser"),
+		os.Getenv("DBPassword"))
 	//dns := fmt.Sprintf("%s:%s@tcp(localhost:3306)/mini_project", os.Getenv("DBUser"), os.Getenv("DBPassword"))
 	db, err := gorm.Open("mysql", dns)
 	if err != nil {

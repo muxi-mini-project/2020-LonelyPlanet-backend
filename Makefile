@@ -1,7 +1,7 @@
 all: gotool
 	@go build -v .
 clean:
-	rm -f main
+	rm -f miniProject
 	find . -name "[._]*.s[a-w][a-z]" | xargs -i rm -f {}
 gotool:
 	gofmt -w .

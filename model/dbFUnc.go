@@ -530,7 +530,7 @@ func ViewAllApplication(uid string, offset int, limit int) ([]ViewApplicationInf
 		}
 	}
 
-	if err := Db.Self.Where("receiver_sid = ?", uid).Where("confirm != ?", 3).Where("send_time < ?", tmpRecord.LatestTime).Offset(offset).Limit(limit).Find(&tmpApplication).Error; err != nil {
+	if err := Db.Self.Where("receiver_sid = ?", uid).Where("confirm != ?", 3).Where("confirm != ?", 4).Where("send_time < ?", tmpRecord.LatestTime).Offset(offset).Limit(limit).Find(&tmpApplication).Error; err != nil {
 		log.Print("ViewAllApplication err")
 		fmt.Println(err)
 		return result, err
@@ -682,6 +682,7 @@ type ReminderInfo struct {
 	Gender           string   `json:"gender"`
 	Grade            string   `json:"grade"`
 	RedPoint         bool     `json:"red_point"`
+	ApplicationId    int      `json:"application_id"`
 }
 
 func ReminderBox(uid string, limit int, offset int) ([]ReminderInfo, error) {
@@ -701,7 +702,7 @@ func ReminderBox(uid string, limit int, offset int) ([]ReminderInfo, error) {
 		}
 	}
 
-	if err := Db.Self.Model(&application{}).Where("sender_sid = ?", uid).Where("confirm != ?", 1).Where("confirm != 4").Where("confirm_time < ?", tmpRecord.LatestTime).Offset(offset).Limit(limit).Find(&tmp).Error; err != nil {
+	if err := Db.Self.Model(&application{}).Where("sender_sid = ?", uid).Where("confirm != ?", 1).Where("confirm != ?", 4).Where("confirm_time < ?", tmpRecord.LatestTime).Offset(offset).Limit(limit).Find(&tmp).Error; err != nil {
 		log.Print("ReminderBox err")
 		fmt.Println(err)
 		return result, nil
@@ -743,6 +744,7 @@ func ReminderBox(uid string, limit int, offset int) ([]ReminderInfo, error) {
 				Gender:           tmpUserInfo.Gender,
 				Grade:            tmpUserInfo.Grade,
 				RedPoint:         redPoint(v.SenderReadStatus), //控制小红点的显示
+				ApplicationId:    v.ApplicationId,
 			}
 			result = append(result, tmpInfo)
 		}
@@ -751,8 +753,10 @@ func ReminderBox(uid string, limit int, offset int) ([]ReminderInfo, error) {
 				Status:        v.Confirm, //提示被拒绝啦！
 				RequirementId: v.RequirementId,
 				Title:         v.Title,
+				ReceiverNickName: tmpUserInfo.NickName,
 				ConfirmTime:   timestamp2json(v.ConfirmTime),
 				RedPoint:      redPoint(v.SenderReadStatus),
+				ApplicationId: v.ApplicationId,
 			}
 			result = append(result, tmpInfo)
 		}
