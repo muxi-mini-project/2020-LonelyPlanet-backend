@@ -341,7 +341,9 @@ func detectPostRequirement(tmp model.Requirements) bool {
 	}
 	//各属性长度 限定 -> 确认
 	if tmp.Tag == 0 || tmp.Type == 0 || tmp.RequirementId != 0 || tmp.Status != 0 {
-		return false
+		if tmp.Type != 4 {
+			return false
+		}
 	}
 	//确定 是否 越界
 	tmpCondition := condition{

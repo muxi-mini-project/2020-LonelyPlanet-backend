@@ -19,7 +19,7 @@ var Db *Database
 func getDatabase() (*gorm.DB, error) {
 	dns := fmt.Sprintf("%s:%s@tcp(47.97.74.180:3306)/mini_project",
 		os.Getenv("DBUser"),
-		os.Getenv("DBPassword"))
+		"ccnuccnu")
 	//dns := fmt.Sprintf("%s:%s@tcp(localhost:3306)/mini_project", os.Getenv("DBUser"), os.Getenv("DBPassword"))
 	db, err := gorm.Open("mysql", dns)
 	if err != nil {

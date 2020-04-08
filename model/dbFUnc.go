@@ -297,7 +297,7 @@ func ConfirmRequirementExist(requirements Requirements) (error, bool) {
 		return err, false
 	}
 	for _, v := range tmpRequirement {
-		if v.Content == requirements.Content && v.Title == requirements.Title && v.Status != 2 {
+		if v.Type == requirements.Type && v.Title == requirements.Title && v.Status != 2 && v.Tag == requirements.Tag && v.Place == requirements.Place {
 			return nil, true
 		}
 	}
@@ -369,7 +369,7 @@ type HistoryRequirement struct {
 func HistoryRequirementFind(uid string, offset int, limit int) ([]HistoryRequirement, error) {
 	var tmpResult []Requirements
 	var result []HistoryRequirement
-	if err := Db.Self.Model(&Requirements{}).Where(Requirements{SenderSid: uid}).Where("status = 1").Offset(offset).Limit(limit).Find(&tmpResult).Error; err != nil {
+	if err := Db.Self.Model(&Requirements{}).Where(Requirements{SenderSid: uid}).Where("status = 1").Order("requirement_id desc").Offset(offset).Limit(limit).Scan(&tmpResult).Error; err != nil {
 		log.Print("HistoryRequirementFind")
 		fmt.Println(err)
 		return result, err
@@ -530,7 +530,7 @@ func ViewAllApplication(uid string, offset int, limit int) ([]ViewApplicationInf
 		}
 	}
 
-	if err := Db.Self.Where("receiver_sid = ?", uid).Where("confirm != ?", 3).Where("confirm != ?", 4).Where("send_time < ?", tmpRecord.LatestTime).Offset(offset).Limit(limit).Find(&tmpApplication).Error; err != nil {
+	if err := Db.Self.Where("receiver_sid = ?", uid).Where("confirm != ?", 3).Where("confirm != ?", 4).Where("send_time < ?", tmpRecord.LatestTime).Order("application_id desc").Offset(offset).Limit(limit).Find(&tmpApplication).Error; err != nil {
 		log.Print("ViewAllApplication err")
 		fmt.Println(err)
 		return result, err
@@ -702,7 +702,7 @@ func ReminderBox(uid string, limit int, offset int) ([]ReminderInfo, error) {
 		}
 	}
 
-	if err := Db.Self.Model(&application{}).Where("sender_sid = ?", uid).Where("confirm != ?", 1).Where("confirm != ?", 4).Where("confirm_time < ?", tmpRecord.LatestTime).Offset(offset).Limit(limit).Find(&tmp).Error; err != nil {
+	if err := Db.Self.Model(&application{}).Where("sender_sid = ?", uid).Where("confirm != ?", 1).Where("confirm != ?", 4).Where("confirm_time < ?", tmpRecord.LatestTime).Order("application_id desc").Offset(offset).Limit(limit).Find(&tmp).Error; err != nil {
 		log.Print("ReminderBox err")
 		fmt.Println(err)
 		return result, nil
@@ -750,13 +750,13 @@ func ReminderBox(uid string, limit int, offset int) ([]ReminderInfo, error) {
 		}
 		if v.Confirm == 3 {
 			tmpInfo := ReminderInfo{
-				Status:        v.Confirm, //提示被拒绝啦！
-				RequirementId: v.RequirementId,
-				Title:         v.Title,
+				Status:           v.Confirm, //提示被拒绝啦！
+				RequirementId:    v.RequirementId,
+				Title:            v.Title,
 				ReceiverNickName: tmpUserInfo.NickName,
-				ConfirmTime:   timestamp2json(v.ConfirmTime),
-				RedPoint:      redPoint(v.SenderReadStatus),
-				ApplicationId: v.ApplicationId,
+				ConfirmTime:      timestamp2json(v.ConfirmTime),
+				RedPoint:         redPoint(v.SenderReadStatus),
+				ApplicationId:    v.ApplicationId,
 			}
 			result = append(result, tmpInfo)
 		}

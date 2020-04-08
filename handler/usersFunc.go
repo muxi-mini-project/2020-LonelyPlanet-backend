@@ -76,7 +76,10 @@ func Test(c *gin.Context) {
 	//token := c.Request.Header.Get("token")
 	//uid := c.GetString("uid")
 	//fmt.Println(uid)
-	c.SetCookie("1", "2", 3600, "/", "l", false, true)
+	//c.SetCookie("1", "2", 3600, "/", "l", false, true)
+	c.JSON(200, gin.H{
+		"msg": time.Now(),
+	})
 	return
 }
 
