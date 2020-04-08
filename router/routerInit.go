@@ -46,8 +46,12 @@ func Init() {
 	Router.DELETE("/lonely_planet/v1/secret/delete/:secret_id/", handler.DebunksDelete)
 	Router.GET("/lonely_planet/v1/secret/history/", handler.DebunksHistory)
 	Router.GET("/lonely_planet/v1/secret/square/", handler.DebunksSquare)
+
 	Router.POST("/lonely_planet/v1/comment/create/", handler.CommentCreate)
 	Router.GET("/lonely_planet/v1/comment/history/:secret_id/", handler.CommentHistory)
 	Router.DELETE("/lonely_planet/v1/comment/delete/:comment_id/", handler.CommentDelete)
+
 	Router.GET("/lonely_planet/v1/remind/night/remindbox/view/", handler.RemindNightRemindboxView)
+	Router.GET("/lonely_planet/v1/remind/night/remindbox/status/",handler.NightRemindExistence)
+	Router.GET("/lonely_planet/v1/remind/night/remindbox/:comment_id/",handler.UpdateNightRemindStatus)
 }

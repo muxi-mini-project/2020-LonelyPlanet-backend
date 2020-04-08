@@ -129,21 +129,40 @@ func GetSecretid(uid string) (secretid []int, err error) {
 	return
 }
 
-func GetCommentData(secretid []int) (commentdata []Commentdata, err error) {
+func GetCommentData(uid string) (commentdata []Commentdata, err error) {
 	var Commentdata1 []Night_comment
 	var data2 Commentdata
-	for _, data := range secretid {
-		Commentdata1 = nil
-		if err := Db.Self.Model(&Night_comment{}).Where(Night_comment{SecretId: data}).Find(&Commentdata1).Error; err != nil {
+	if err := Db.Self.Model(&Night_comment{}).Where(Night_comment{ReceiverSid:uid}).Order("comment_id desc").Find(&Commentdata1).Error; err != nil {
 			log.Println(err)
-		}
-		for _, data1 := range Commentdata1 {
-			data2.SecretId = data1.SecretId
-			data2.CommentTime = data1.CommentTime
-			data2.Comment = data1.Comment
-			data2.Num = RandNum(10)
-			commentdata = append(commentdata, data2)
-		}
+	}
+	for _, data1 := range Commentdata1 {
+		data2.SecretId = data1.SecretId
+		data2.CommentTime = data1.CommentTime
+		data2.Comment = data1.Comment
+		data2.CommentId = data1.CommentId
+		data2.Status = data1.Status
+		data2.Num = RandNum(10)
+		commentdata = append(commentdata, data2)
+	}
+	return
+}
+
+func CheckRemindExist(uid string) (status int, err error) {
+	var num int
+	if err := Db.Self.Model(&Night_comment{}).Where(Night_comment{ReceiverSid:uid}).Where("status:0").Count(&num).Error; err != nil {
+		log.Println(err)
+	}
+	if num == 0 {
+		status = 1
+	} else {
+		status = 0
+	}
+	return
+}
+
+func ChangeStatus(commentid int) (err error) {
+	if err := Db.Self.Model(&Night_comment{}).Where(Night_comment{CommentId:commentid}).Update(Night_comment{Status:1}).Error; err != nil {
+		log.Println(err)
 	}
 	return
 }

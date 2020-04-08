@@ -1,24 +1,15 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/2020-LonelyPlanet-backend/miniProject/model"
 	"github.com/gin-gonic/gin"
 	"log"
+	"strconv"
 )
 
 func RemindNightRemindboxView(c *gin.Context) {
 	uid := c.GetString("uid")
-	secretid, err := model.GetSecretid(uid)
-	fmt.Println(secretid)
-	if err != nil {
-		log.Println(err)
-		c.JSON(400, gin.H{
-			"message": "请求错误",
-		})
-		return
-	}
-	commentdata, err1 := model.GetCommentData(secretid)
+	commentdata, err1 := model.GetCommentData(uid)
 	if err1 != nil {
 		log.Println(err1)
 		c.JSON(400, gin.H{
@@ -31,3 +22,33 @@ func RemindNightRemindboxView(c *gin.Context) {
 		"commentdata": commentdata,
 	})
 }
+
+func NightRemindExistence(c *gin.Context) {
+	uid := c.GetString("uid")
+	status, err := model.CheckRemindExist(uid)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": "请求错误",
+		})
+		return
+	}
+	c.JSON(200,gin.H{
+		"message": "请求成功",
+		"status": status,
+	})
+}
+
+func UpdateNightRemindStatus(c *gin.Context) {
+	commentid, _ := strconv.Atoi(c.Query("commentId"))
+	err := model.ChangeStatus(commentid)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": "更新失败",
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "更新成功",
+	})
+}
+
