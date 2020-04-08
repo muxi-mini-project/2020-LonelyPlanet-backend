@@ -166,3 +166,21 @@ func timestamp2json(str string) string {
 	result := time.Unix(tmpTime, 0).Format("01-02 15:04")
 	return result
 }
+
+func changeCollegeName(name string) string {
+	switch name {
+	case "经济与工商管理学院":
+		return "经管"
+	case "教育大数据应用技术国家工程实验室":
+		return "大数据"
+	case "城市与环境科学学院":
+		return "城环"
+	case "教育信息技术学院":
+		return "信技"
+	case "物理科学与技术学院":
+		return "物院"
+	case "政治与国际关系学院":
+		return "政国"
+	}
+	return name
+}

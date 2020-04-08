@@ -543,7 +543,7 @@ func ViewAllApplication(uid string, offset int, limit int) ([]ViewApplicationInf
 			ApplicationId:  v.ApplicationId,
 			SenderNickname: tmpUser.NickName,
 			RequirementsId: v.RequirementId,
-			College:        tmpUser.College,
+			College:        changeCollegeName(tmpUser.College),
 			SendTime:       timestamp2json(v.SendTime),
 			Title:          v.Title,
 			Gender:         tmpUser.Gender,
@@ -740,7 +740,7 @@ func ReminderBox(uid string, limit int, offset int) ([]ReminderInfo, error) {
 				ContactWay:       []string{v.ReceiverContactWay1, v.ReceiverContactWay2},
 				Content:          v.Addition2,
 				ReceiverNickName: tmpUserInfo.NickName,
-				College:          tmpUserInfo.College,
+				College:          changeCollegeName(tmpUserInfo.College),
 				Gender:           tmpUserInfo.Gender,
 				Grade:            tmpUserInfo.Grade,
 				RedPoint:         redPoint(v.SenderReadStatus), //控制小红点的显示
