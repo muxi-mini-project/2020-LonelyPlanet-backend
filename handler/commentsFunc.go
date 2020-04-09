@@ -11,6 +11,7 @@ import (
 func CommentCreate(c *gin.Context) {
 	var data model.Night_comment
 	secretid, _ := strconv.Atoi(c.Query("secretId"))
+	receiverid := c.Query("receiver_sid")
 	if !model.CheckDebunk(secretid) {
 		c.JSON(400, gin.H{
 			"message": "该秘密不存在",
@@ -24,6 +25,7 @@ func CommentCreate(c *gin.Context) {
 		})
 		return
 	}
+	data.ReceiverSid = receiverid
 	data.SecretId = secretid
 	data.CommentTime = model.NowTime()
 	fmt.Println(data)

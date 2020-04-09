@@ -160,6 +160,19 @@ func CheckRemindExist(uid string) (status int, err error) {
 	return
 }
 
+func CheckCommentIdExist(commentid int) (status int, err error) {
+	var num int
+	if err := Db.Self.Model(&Night_comment{}).Where(Night_comment{CommentId: commentid}).Count(&num).Error; err != nil {
+		log.Println(err)
+	}
+	if num == 0 {
+		status = 1
+	} else {
+		status = 0
+	}
+	return
+}
+
 func ChangeStatus(commentid int) (err error) {
 	if err := Db.Self.Model(&Night_comment{}).Where(Night_comment{CommentId: commentid}).Update(Night_comment{Status: 1}).Error; err != nil {
 		log.Println(err)

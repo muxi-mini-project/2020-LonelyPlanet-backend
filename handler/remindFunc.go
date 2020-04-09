@@ -40,7 +40,13 @@ func NightRemindExistence(c *gin.Context) {
 
 func UpdateNightRemindStatus(c *gin.Context) {
 	commentid, _ := strconv.Atoi(c.Query("commentId"))
-	err := model.ChangeStatus(commentid)
+	status, err := model.CheckCommentIdExist(commentid)
+	if status == 1 {
+		c.JSON(400, gin.H{
+			"message": "更新失败 该秘密不存在",
+		})
+	}
+	err = model.ChangeStatus(commentid)
 	if err != nil {
 		c.JSON(400, gin.H{
 			"message": "更新失败",
