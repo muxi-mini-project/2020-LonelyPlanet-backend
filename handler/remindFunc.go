@@ -32,9 +32,9 @@ func NightRemindExistence(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(200,gin.H{
+	c.JSON(200, gin.H{
 		"message": "请求成功",
-		"status": status,
+		"status":  status,
 	})
 }
 
@@ -51,4 +51,3 @@ func UpdateNightRemindStatus(c *gin.Context) {
 		"message": "更新成功",
 	})
 }
-

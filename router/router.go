@@ -1,6 +1,7 @@
 package router
 
 import (
+	_ "github.com/2020-LonelyPlanet-backend/miniProject/docs"
 	"github.com/2020-LonelyPlanet-backend/miniProject/handler"
 	"github.com/2020-LonelyPlanet-backend/miniProject/handler/sd"
 	"github.com/2020-LonelyPlanet-backend/miniProject/middleware"
@@ -56,15 +57,15 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 
 	remind := g.Group("/lonely_planet/v1/remind")
 	{
-		remind.GET("/day/remindbox/status/", handler.DayRemindExistence)                 //查询是否显示小红点
-		remind.GET("/day/remindbox/", handler.ReminderBox)                               //点击回复提醒
+		remind.GET("/day/remindbox/status/", handler.DayRemindExistence)       //查询是否显示小红点
+		remind.GET("/day/remindbox/", handler.ReminderBox)                     //点击回复提醒
 		remind.POST("/day/done/:application_id/", handler.UpdateRemindStatus1) //更新申请人阅读状态
 		//Router.GET("/remind/night/remindbox/",handler.NightInformationExistence)
 
 		//下面的是黑夜的
 		remind.GET("/night/remindbox/view/", handler.RemindNightRemindboxView)
-		remind.GET("/night/remindbox/status/",handler.NightRemindExistence)
-		remind.POST("/night/remindbox/status/:comment_id/",handler.UpdateNightRemindStatus)
+		remind.GET("/night/remindbox/status/", handler.NightRemindExistence)
+		remind.POST("/night/remindbox/status/:comment_id/", handler.UpdateNightRemindStatus)
 	}
 
 	application := g.Group("/lonely_planet/v1/application")
@@ -90,8 +91,6 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		comment.GET("/history/:secret_id/", handler.CommentHistory)
 		comment.DELETE("/delete/:comment_id/", handler.CommentDelete)
 	}
-
-
 
 	return g
 }
