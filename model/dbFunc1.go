@@ -149,7 +149,7 @@ func GetCommentData(uid string) (commentdata []Commentdata, err error) {
 
 func CheckRemindExist(uid string) (status int, err error) {
 	var num int
-	if err := Db.Self.Model(&Night_comment{}).Where(Night_comment{ReceiverSid: uid}).Where("status:0").Count(&num).Error; err != nil {
+	if err := Db.Self.Model(&Night_comment{}).Where(Night_comment{ReceiverSid: uid}).Where("status = ?", 0).Count(&num).Error; err != nil {
 		log.Println(err)
 	}
 	if num == 0 {
