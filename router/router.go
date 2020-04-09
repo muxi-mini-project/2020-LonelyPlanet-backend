@@ -64,7 +64,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		//下面的是黑夜的
 		remind.GET("/night/remindbox/view/", handler.RemindNightRemindboxView)
 		remind.GET("/night/remindbox/status/",handler.NightRemindExistence)
-		//remind.GET("/night/remindbox/:comment_id/",handler.UpdateNightRemindStatus)
+		remind.POST("/night/remindbox/status/:comment_id/",handler.UpdateNightRemindStatus)
 	}
 
 	application := g.Group("/lonely_planet/v1/application")
