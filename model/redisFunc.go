@@ -32,9 +32,17 @@ func InspectNum(userId string, type1 int) (int, error) {
 		result = len(tmp2)
 		return result, nil
 	}
-	result, err := redis.Int(RedisDb.Self.Do("get", tmp))
+	exists, err := redis.Bool(RedisDb.Self.Do("exists", tmp))
 	if err != nil {
 		return result, err
+	}
+	result = 0
+	if exists {
+		result, err := redis.Int(RedisDb.Self.Do("get", tmp))
+		if err != nil {
+			return result, err
+		}
+		return result, nil
 	}
 	return result, nil
 }
