@@ -59,7 +59,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	{
 		remind.GET("/day/remindbox/status/", handler.DayRemindExistence)       //查询是否显示小红点
 		remind.GET("/day/remindbox/", handler.ReminderBox)                     //点击回复提醒
-		remind.POST("/day/done/:application_id/", handler.UpdateRemindStatus1) //更新申请人阅读状态
+		remind.POST("/day/remindbox/done/:application_id/", handler.UpdateRemindStatus1) //更新申请人阅读状态
 		//Router.GET("/remind/night/remindbox/",handler.NightInformationExistence)
 
 		//下面的是黑夜的

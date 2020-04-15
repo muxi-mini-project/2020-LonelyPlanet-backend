@@ -134,7 +134,7 @@ func UpdateRemindStatus1(c *gin.Context) {
 
 // @Summary 更新收件人阅读状态
 // @Description 更新申收件人阅读状态, 需要在用户在申请提醒中点击需求或者点击小眼睛或者直接处理请求的同时, 通过请求这条来更新状态, 如果可以希望可以根据是否已读来判断是否进行此次请求以减少请求次数
-// @Tags remind
+// @Tags application
 // @Accept json
 // @Produce json
 // @Param application_id path string true "用户已查看的申请id, 在别的api中给出"

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"github.com/spf13/viper"
 	"log"
 )
 
@@ -16,9 +17,10 @@ type Database struct {
 var Db *Database
 
 func getDatabase() (*gorm.DB, error) {
-	dns := fmt.Sprintf("%s:%s@tcp(47.97.74.180:3306)/mini_project",
-		"root",
-		"ccnuccnu")
+	dns := fmt.Sprintf("%s:%s@tcp(%s)/mini_project",
+		viper.GetString("db.username"),
+		viper.GetString("db.password"),
+		viper.GetString("db.addr"))
 	//dns := fmt.Sprintf("%s:%s@tcp(localhost:3306)/mini_project", os.Getenv("DBUser"), os.Getenv("DBPassword"))
 	db, err := gorm.Open("mysql", dns)
 	if err != nil {

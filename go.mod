@@ -8,6 +8,7 @@ require (
 	github.com/asynccnu/data_service v0.0.0-20200209091406-2e65b3f55516
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fsnotify/fsnotify v1.4.9
+	github.com/garyburd/redigo v1.6.0
 	github.com/gin-gonic/gin v1.6.2
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-sql-driver/mysql v1.5.0

@@ -386,6 +386,27 @@ func PostRequirement(c *gin.Context) {
 	}
 
 	uid := c.GetString("uid")
+	num, err := model.InspectNum(uid, 1)
+	if err != nil {
+		ErrServerError(c, error2.ServerError)
+		return
+	}
+	if num >= 2 {
+		ErrBadRequest(c, error2.FrequentRequests1) //暂且这样
+		return
+	}
+
+	num2, err := model.InspectNum(uid, 3)
+	if err != nil {
+		ErrServerError(c, error2.ServerError)
+		return
+	}
+
+	if num2 >= 15 {
+		ErrBadRequest(c, error2.FrequentRequests2) //暂且这样
+		return
+	}
+
 	newRequirement.PostTime = model.NowTimeStampStr()
 	newRequirement.SenderSid = uid
 
@@ -411,6 +432,11 @@ func PostRequirement(c *gin.Context) {
 		return
 	}
 	err = model.CreatRequirement(newRequirement)
+	if err != nil {
+		ErrServerError(c, error2.ServerError)
+		return
+	}
+	err = model.NewRecode(uid, 1) //新增记录
 	if err != nil {
 		ErrServerError(c, error2.ServerError)
 		return
