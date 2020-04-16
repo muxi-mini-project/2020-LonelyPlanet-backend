@@ -371,27 +371,18 @@ func detectPostRequirement(tmp model.Requirements) bool {
 // @Failure 500 {object} error.Error "{"error_code":"30001", "message":"Fail."} 失败"
 // @Router /requirement/new/ [put]
 func PostRequirement(c *gin.Context) {
-	var newRequirement model.Requirements
-	err := c.BindJSON(&newRequirement)
-	if err != nil {
-		log.Print("PostRequirement err")
-		fmt.Println(err)
-		ErrBadRequest(c, error2.BadRequest)
-		return
-	}
-
-	if !detectPostRequirement(newRequirement) {
-		ErrBadRequest(c, error2.ParamBadRequest)
-		return
-	}
-
 	uid := c.GetString("uid")
+	err := model.NewRecode(uid, 1) //新增记录
+	if err != nil {
+		ErrServerError(c, error2.ServerError)
+		return
+	}
 	num, err := model.InspectNum(uid, 1)
 	if err != nil {
 		ErrServerError(c, error2.ServerError)
 		return
 	}
-	if num >= 2 {
+	if num > 2 {
 		ErrBadRequest(c, error2.FrequentRequests1) //暂且这样
 		return
 	}
@@ -402,8 +393,23 @@ func PostRequirement(c *gin.Context) {
 		return
 	}
 
-	if num2 >= 15 {
+	if num2 > 15 {
 		ErrBadRequest(c, error2.FrequentRequests2) //暂且这样
+		return
+	}
+	fmt.Println(num, num2)
+
+	var newRequirement model.Requirements
+	err = c.BindJSON(&newRequirement)
+	if err != nil {
+		log.Print("PostRequirement err")
+		fmt.Println(err)
+		ErrBadRequest(c, error2.BadRequest)
+		return
+	}
+
+	if !detectPostRequirement(newRequirement) {
+		ErrBadRequest(c, error2.ParamBadRequest)
 		return
 	}
 
@@ -436,11 +442,13 @@ func PostRequirement(c *gin.Context) {
 		ErrServerError(c, error2.ServerError)
 		return
 	}
+	/*
 	err = model.NewRecode(uid, 1) //新增记录
 	if err != nil {
 		ErrServerError(c, error2.ServerError)
 		return
 	}
+	 */
 	c.JSON(200, gin.H{
 		"msg": "success",
 	})

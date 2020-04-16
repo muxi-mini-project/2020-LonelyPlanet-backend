@@ -3,6 +3,7 @@ package model
 import (
 	"bytes"
 	"github.com/garyburd/redigo/redis"
+	log "github.com/sirupsen/logrus"
 	"strconv"
 	"time"
 )
@@ -24,22 +25,27 @@ func InspectNum(userId string, type1 int) (int, error) {
 		bt.WriteString("nightTotal"); bt.WriteString(now())
 	}
 	tmp := bt.String()
+	newRedis := RedisDb.Self.Get()
+	defer newRedis.Close()
 	if type1 == 1 || type1 == 2 {
-		tmp2, err := redis.Strings(RedisDb.Self.Do("keys", tmp))
+		tmp2, err := redis.Strings(newRedis.Do("keys", tmp))
 		if err != nil {
+			log.Println("keys",err)
 			return result, err
 		}
 		result = len(tmp2)
 		return result, nil
 	}
-	exists, err := redis.Bool(RedisDb.Self.Do("exists", tmp))
+	exists, err := redis.Bool(newRedis.Do("exists", tmp))
 	if err != nil {
+		log.Println("exits",err)
 		return result, err
 	}
 	result = 0
 	if exists {
-		result, err := redis.Int(RedisDb.Self.Do("get", tmp))
+		result, err := redis.Int(newRedis.Do("get", tmp))
 		if err != nil {
+			log.Println("get", err)
 			return result, err
 		}
 		return result, nil
@@ -61,25 +67,32 @@ func NewRecode(userId string, type1 int) error {
 	}
 	tmp := bt.String()
 	tmp2 := bt2.String()
-	_, err := RedisDb.Self.Do("set", tmp, 1)
+	newRedis := RedisDb.Self.Get()
+	defer newRedis.Close()
+	_, err := newRedis.Do("set", tmp, 1)
 	if err != nil {
+		log.Println("newrecode1",err)
 		return err
 	}
-	_, err = RedisDb.Self.Do("expire", tmp, 60)
+	_, err = newRedis.Do("expire", tmp, 60)
 	if err != nil {
+		log.Println("newrecode2",err)
 		return err
 	}
-	exists, err := redis.Bool(RedisDb.Self.Do("exists", tmp2))
+	exists, err := redis.Bool(newRedis.Do("exists", tmp2))
 	if err != nil {
+		log.Println("newrecode3",err)
 		return err
 	}
-	_, err = RedisDb.Self.Do("incr", tmp2)
+	_, err = newRedis.Do("incr", tmp2)
 	if err != nil {
+		log.Println("newrecode4",err)
 		return err
 	}
 	if !exists {
-		_, err = RedisDb.Self.Do("expireat", tmp2, nextDay())
+		_, err = newRedis.Do("expireat", tmp2, nextDay())
 		if err != nil {
+			log.Println("newrecode5",err)
 			return err
 		}
 	}

@@ -1,24 +1,31 @@
 package model
 
 import (
-	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"github.com/spf13/viper"
+	"time"
 )
 
 //Redis
 type Redis struct {
-	Self redis.Conn
+	Self *redis.Pool
 }
 
 var RedisDb *Redis
 
 func (rdb *Redis) Init() {
-	newDb, err := redis.Dial(viper.GetString("redis.network"), viper.GetString("redis.addr"))
-	if err != nil {
-		fmt.Println(err)
+	//newDb, err := redis.Dial(viper.GetString("redis.network"), viper.GetString("redis.addr"))
+	pool := &redis.Pool{
+		// 初始化链接数量
+		MaxIdle:     16,
+		MaxActive:   0,
+		IdleTimeout: 300 * time.Second,
+		Dial: func() (redis.Conn, error) {
+			return redis.Dial(viper.GetString("redis.network"), viper.GetString("redis.addr"))
+		},
 	}
-	RedisDb = &Redis{Self: newDb}
+
+	RedisDb = &Redis{Self: pool}
 }
 
 func (rdb *Redis) Close() error {
