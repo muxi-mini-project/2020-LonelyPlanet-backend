@@ -372,7 +372,7 @@ func detectPostRequirement(tmp model.Requirements) bool {
 // @Router /requirement/new/ [put]
 func PostRequirement(c *gin.Context) {
 	uid := c.GetString("uid")
-	err := model.NewRecode(uid, 1) //新增记录
+	err := model.NewRecode(uid, 1, 60) //新增记录
 	if err != nil {
 		ErrServerError(c, error2.ServerError)
 		return

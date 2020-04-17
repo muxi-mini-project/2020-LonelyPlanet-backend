@@ -92,5 +92,12 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		comment.DELETE("/delete/:comment_id/", handler.CommentDelete)
 	}
 
+	//举报
+	report := g.Group("/lonely_planet/v1/report")
+	{
+		report.POST("/day/:requirement_id/", handler.DayReport) //白天的举报
+		//留给黑夜的
+	}
+
 	return g
 }

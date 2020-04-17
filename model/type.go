@@ -125,3 +125,8 @@ type MyInformation struct {
 	Grade    string `json:"grade"`
 	Portrait int    `json:"portrait"`
 }
+
+type ReportInformation struct {
+	Reason string `json:"reason"`
+	Addition string `json:"addition"`
+}

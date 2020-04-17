@@ -54,7 +54,8 @@ func InspectNum(userId string, type1 int) (int, error) {
 }
 
 //调用此函数前一定先调用Num, redis效率较高, 所以多次调用后手动判断较好, 避免多次重置计时
-func NewRecode(userId string, type1 int) error {
+//sec 自定义过期时间
+func NewRecode(userId string, type1 int, sec int) error {
 	var bt bytes.Buffer
 	var bt2 bytes.Buffer
 	bt.WriteString(userId)
@@ -74,7 +75,7 @@ func NewRecode(userId string, type1 int) error {
 		log.Println("newrecode1",err)
 		return err
 	}
-	_, err = newRedis.Do("expire", tmp, 60)
+	_, err = newRedis.Do("expire", tmp, sec)
 	if err != nil {
 		log.Println("newrecode2",err)
 		return err
