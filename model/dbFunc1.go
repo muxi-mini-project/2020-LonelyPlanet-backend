@@ -112,6 +112,13 @@ func DeleteComment(commentid int) (err error) {
 	return
 }
 
+func GetComment(commentid int) (comment Night_comment, err error)  {
+	if err = Db.Self.Model(&Night_comment{}).Where(Night_comment{CommentId: commentid}).Find(&comment).Error; err != nil {
+		log.Println(err)
+	}
+	return
+}
+
 func CheckComment(commentid int) bool {
 	var data Night_comment
 	res := Db.Self.Model(&Night_comment{}).Where(Night_comment{CommentId: commentid}).Find(&data)
