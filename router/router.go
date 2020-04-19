@@ -96,8 +96,8 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	report := g.Group("/lonely_planet/v1/report")
 	{
 		report.POST("/day/:requirement_id/", handler.DayReport) //白天的举报
-		report.POST("/night/:secret_id/", handler.NightSecretReport)//黑夜的秘密举报
-		report.POST("/night/:comment_id/", handler.NightNightReport)//黑夜的评论举报
+		report.POST("/night/secret/:secret_id/", handler.NightSecretReport)//黑夜的秘密举报
+		report.POST("/night/comment/:comment_id/", handler.NightNightReport)//黑夜的评论举报
 	}
 
 	return g
