@@ -46,21 +46,37 @@ type latestAction struct {
 	RandNum    int    `gorm:"rand_num"`
 }
 
-func CreatUser(tmpUser UserInfo) error {
+func CreatUser(tmpUser UserInfo) (error, int) {
 	var num int
+	var count int
 	if Db.Self.Model(&UserInfo{}).Where(UserInfo{Sid: tmpUser.Sid}).Count(&num); num == 0 {
 		if err := Db.Self.Model(&UserInfo{}).Create(&tmpUser).Error; err != nil {
-			return err
+			log.Println("creat user err: ", err)
+			return err, count
 		}
 		var tmpAction latestAction
 		tmpAction.Sid = tmpUser.Sid
 		tmpAction.RandNum = getRandomNum()
 		tmpAction.LatestTime = NowTimeStampStr()
 		if err := Db.Self.Model(&latestAction{}).Create(&tmpAction).Error; err != nil {
-			return err
+			log.Println("creat last action err: ", err)
+			return err, count
+		}
+		count = 1
+	}else {
+		if err := Db.Self.Model(&UserInfo{}).Where(UserInfo{Sid: tmpUser.Sid}).Pluck("count", &count).Error; err != nil {
+			log.Println("find count err: ", err)
+			return err, count
+		}
+		if count == 0 {
+			count = 1
+			if err := Db.Self.Model(&UserInfo{}).Where(UserInfo{Sid:tmpUser.Sid}).Update(tmpUser).Error; err != nil {
+				log.Println("update count err: ", err)
+			}
 		}
 	}
-	return nil
+
+	return nil, count
 }
 
 func FindUser(uid string) (UserInfo, error) {

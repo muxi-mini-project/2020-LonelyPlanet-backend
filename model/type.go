@@ -7,6 +7,7 @@ type UserInfo struct {
 	Gender   string `json:"gender" gorm:"gender"`
 	Grade    string `json:"grade" gorm:"grade"`
 	Portrait int    `json:"portrait" gorm:"portrait"`
+	Count    int    `json:"count" gorm:"default:0"`
 	//NightPortrait string `json:"night_portrait" gorm:"night_portrait"`
 	//Requirements  int    `json:"-" gorm:"requirements"`
 	//Debunks       int    `json:"-" gorm:"debunks"`

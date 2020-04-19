@@ -52,9 +52,10 @@ func UserLogin(c *gin.Context) {
 		Gender:   getGender(tmpUser.User.Xb),
 		Grade:    model.ChangeString(tmpUser.User.Usernumber, 1, 4),
 		Portrait: getRandomPortrait(), //rand
+		Count:    1,
 	}
 
-	err = model.CreatUser(user) //写入用户数据到数据库
+	err, count := model.CreatUser(user) //写入用户数据到数据库
 	if err != nil {
 		ErrServerError(c, error2.ServerError)
 		return
@@ -65,6 +66,7 @@ func UserLogin(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"msg":   "success",
 		"token": produceToken(user.Sid),
+		"count": count, //是否第一次登录: 1/0 1是第一次登录
 	})
 	return
 }
