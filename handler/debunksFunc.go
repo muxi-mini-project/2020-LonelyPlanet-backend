@@ -109,7 +109,10 @@ func DebunksHistory(c *gin.Context) {
 
 func DebunksSquare(c *gin.Context) {
 	var secret model.Debunk
-	secret, err := model.SquareDebunk()
+	limit := 1
+	uid := c.GetString("uid")
+	page, _ := strconv.Atoi(c.Query("page"))
+	secret, err := model.SquareDebunk(uid, page, limit)
 	if err != nil {
 		log.Println(err)
 		c.JSON(400, gin.H{

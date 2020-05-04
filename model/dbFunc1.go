@@ -1,7 +1,7 @@
 package model
 
 import (
-	"fmt"
+	//"fmt"
 	"log"
 	"math/rand"
 	"strconv"
@@ -66,19 +66,45 @@ func GetCommentHistory(history []Night_comment) (comment []Comment) {
 	return
 }
 
-func SquareDebunk() (secret Debunk, err error) {
-	var i int
+func SquareDebunk(sid string, page int, limit int) (secret Debunk, err error) {
+	var i,n int
+	var num int
+	var tmpRecord latestAction
 	var secretid []int
-	if err = Db.Self.Model(&Debunk{}).Count(&i).Pluck("debunk_id", &secretid).Error; err != nil {
+
+	if err = Db.Self.Model(&Debunk{}).Count(&i).Error; err != nil {
 		log.Println(err)
 		return
 	}
-	fmt.Println(i)
-	n := secretid[(RandNum(i))]
-	if err = Db.Self.Model(&Debunk{}).Where(Debunk{Debunkid: n}).Find(&secret).Error; err != nil {
-		log.Println(err)
-		return
+
+	if page == 1 {
+		tmpRecord.RandNum = getRandomNum()
+		tmpRecord.LatestTime = NowTimeStampStr()
+		err = RecordAction(sid, tmpRecord.RandNum, tmpRecord.LatestTime)
 	}
+
+	if i >= page * limit {
+		if err = Db.Self.Model(&latestAction{}).Where("sid = ?", sid).Pluck("rand_num", &num).Error; err != nil {
+			log.Println(err)
+			return
+		}
+		if err = Db.Self.Model(&Debunk{}).Order("rand(" + strconv.Itoa(num) + ")").Limit(limit).Offset((page - 1) * limit).Find(&secret).Error; err != nil {
+			log.Println(err)
+			return
+		}
+
+	} else {
+		if err = Db.Self.Model(&Debunk{}).Pluck("debunk_id", &secretid).Error; err != nil {
+			log.Println(err)
+			return
+		}
+		n = secretid[(RandNum(i))]
+		if err = Db.Self.Model(&Debunk{}).Where(Debunk{Debunkid: n}).Find(&secret).Error; err != nil {
+			log.Println(err)
+			return
+		}
+	}
+
 	return
 }
 
