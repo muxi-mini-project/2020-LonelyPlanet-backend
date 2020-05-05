@@ -84,11 +84,11 @@ func SquareDebunk(sid string, page int, limit int) (secret Debunk, err error) {
 	}
 
 	if i >= page * limit {
-		if err = Db.Self.Model(&latestAction{}).Where("sid = ?", sid).Pluck("rand_num", &num).Error; err != nil {
+		if err = Db.Self.Model(&latestAction{}).Where("sid = ?", sid).Find(&tmpRecord).Error; err != nil {
 			log.Println(err)
 			return
 		}
-		if err = Db.Self.Model(&Debunk{}).Order("rand(" + strconv.Itoa(num) + ")").Limit(limit).Offset((page - 1) * limit).Find(&secret).Error; err != nil {
+		if err = Db.Self.Model(&Debunk{}).Order("rand(" + strconv.Itoa(tmpRecord.RandNum) + ")").Offset((page - 1) * limit).Limit(limit).Find(&secret).Error; err != nil {
 			log.Println(err)
 			return
 		}
