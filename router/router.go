@@ -36,7 +36,11 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	}
 
 	g.GET("/test", handler.Test)
+
 	g.POST("/lonely_planet/v1/login/", handler.UserLogin) //用户登录
+	//1.4 加入首页反馈
+	g.POST("/lonely_planet/v1/feedback/", handler.Feedback)  //首页反馈
+
 	g.Use(middleware.JwtAAuth())
 
 
@@ -101,8 +105,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		report.POST("/day/:requirement_id/", handler.DayReport) //白天的举报
 		report.POST("/night/secret/:secret_id/", handler.NightSecretReport)//黑夜的秘密举报
 		report.POST("/night/comment/:comment_id/", handler.NightNightReport)//黑夜的评论举报
-		//1.4 加入首页反馈
-		report.POST("/feedback/", handler.Feedback) //首页反馈
+		//report.POST("/feedback/", handler.Feedback)
 	}
 
 	return g

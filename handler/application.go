@@ -23,6 +23,17 @@ import (
 // @Router /application/:application_id/ [put]
 func SolveApplication(c *gin.Context) {
 	uid := c.GetString("uid")
+
+	black, err := model.ConfirmBlackList(uid)
+	if err != nil {
+		ErrServerError(c, error2.ServerError)
+		return
+	}
+	if black {
+		ErrUnauthorized(c, error2.BlackList)
+		return
+	}
+
 	status, err := strconv.Atoi(c.Query("status")) //2->接受　3->拒绝
 	if err != nil {
 		ErrBadRequest(c, error2.ParamBadRequest)

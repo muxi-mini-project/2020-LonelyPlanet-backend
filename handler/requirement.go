@@ -379,15 +379,25 @@ func detectPostRequirement(tmp model.Requirements) bool {
 func PostRequirement(c *gin.Context) {
 	uid := c.GetString("uid")
 
+	black, err := model.ConfirmBlackList(uid)
+	if err != nil {
+		ErrServerError(c, error2.ServerError)
+		return
+	}
+	if black {
+		ErrUnauthorized(c, error2.BlackList)
+		return
+	}
+
 	var newRequirement model.Requirements
-	err := c.BindJSON(&newRequirement)
+	err = c.BindJSON(&newRequirement)
 	if err != nil {
 		log.Println("PostRequirement err", err)
 		ErrBadRequest(c, error2.BadRequest)
 		return
 	}
 
-	if newRequirement.IsDraft == 2 {  //不是草稿
+	if newRequirement.IsDraft != 1 {  //不是草稿
 		err = model.NewRecode(uid, 1, 60) //新增记录
 		if err != nil {
 			ErrServerError(c, error2.ServerError)
@@ -535,13 +545,24 @@ func HistoryRequirement(c *gin.Context) {
 // @Router /requirement/application/:requirement_id/ [post]
 func ApplyRequirement(c *gin.Context) {
 	uid := c.GetString("uid")
+
+	black, err := model.ConfirmBlackList(uid)
+	if err != nil {
+		ErrServerError(c, error2.ServerError)
+		return
+	}
+	if black {
+		ErrUnauthorized(c, error2.BlackList)
+		return
+	}
+
 	if len(c.Param("requirement_id")) == 0 {
 		ErrBadRequest(c, error2.ParamBadRequest)
 		return
 	}
 	requirementId, _ := strconv.Atoi(c.Param("requirement_id"))
 	var tmpContract model.Application
-	err := c.BindJSON(&tmpContract)
+	err = c.BindJSON(&tmpContract)
 	//fmt.Println(tmpContract)
 	if len(tmpContract.ContactWay) != 2 {
 		ErrBadRequest(c, error2.ParamBadRequest)

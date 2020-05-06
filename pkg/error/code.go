@@ -8,6 +8,7 @@ var (
 
 	TokenInvalid = &Error{ErrorCode: "10001", Message: "Token Invalid."}
 	Unauthorized = &Error{ErrorCode: "10002", Message: "Unauthorized."}
+	BlackList = &Error{ErrorCode: "10003", Message: "You are in our blacklist."}
 
 	LoginError = &Error{ErrorCode: "20001", Message: "Password or account wrong."}
 

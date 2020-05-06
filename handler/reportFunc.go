@@ -39,17 +39,17 @@ func DayReport(c *gin.Context) {
 }
 
 func Feedback(c *gin.Context) {
-	uid := c.GetString("uid")
+	//uid := c.GetString("uid")
 
 	var content model.FeedBackContent
 	err := c.BindJSON(& content)
 	if err != nil {
-		log.Println("PostRequirement err", err)
+		log.Println("Feedback err", err)
 		ErrBadRequest(c, error2.BadRequest)
 		return
 	}
 
-	err = util.SendMail(3, "", "", uid, "", content.Content)
+	err = util.SendMail(3, "", "", "", "", content.Content)
 	if err != nil {
 		log.Println("sendmail err: ", err)
 		ErrServerError(c, error2.ServerError)

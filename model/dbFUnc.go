@@ -331,7 +331,7 @@ func RequirementFind(type1 int, sid string, date int, timeFrom int, timeEnd int,
 //真-->存在
 func ConfirmRequirementExist(requirements Requirements) (error, bool) {
 	var tmpRequirement []Requirements
-	if err := Db.Self.Model(&Requirements{}).Where("sender_sid = ?", requirements.SenderSid).Where("status == ？",1).Find(&tmpRequirement).Error; err != nil {
+	if err := Db.Self.Model(&Requirements{}).Where("sender_sid = ?", requirements.SenderSid).Where("status = ?",1).Find(&tmpRequirement).Error; err != nil {
 		fmt.Println(err)
 		return err, false
 	}
@@ -939,4 +939,28 @@ func DeleteDraft(uid string) error {
 		return err
 	}
 	return nil
+}
+
+//确认是否存在于黑名单内
+func ConfirmBlackList(uid string) (bool, error) {
+	var num int
+	if err := Db.Self.Model(&BlackList{}).Where("sid = ?", uid).Count(&num).Error; err != nil {
+		log.Println("find user in black_list err: ", err)
+		return false, err
+	}
+	if num != 0 {
+		var tmp BlackList
+		err := Db.Self.Model(&BlackList{}).Where("sid = ?", uid).First(&tmp).Error
+		if err != nil {
+			log.Println("find user in black_list err: ", err)
+			return false, err
+		}
+		now := NowTimeStampStr()
+		fmt.Println()
+		if tmp.Expiry < now  {
+			return false, nil
+		}
+		return true, nil
+	}
+	return false, nil
 }

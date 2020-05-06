@@ -141,3 +141,10 @@ type Draft struct {
 type FeedBackContent struct {
 	Content string `json:"content"`
 }
+
+type BlackList struct {
+	Sid string `gorm:"sid"`
+	Reason string `gorm:"reason"`
+	Expiry string `gorm:"expiry"`
+	From string `gorm:"from"`
+}
