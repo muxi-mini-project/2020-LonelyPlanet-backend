@@ -10,5 +10,4 @@ db:  # DB 配置 部署时环境变量覆盖
   password: ccnuccnu
 redis:  # redis 配置
   network: tcp
-  max_num: 8
   addr: 127.0.0.1:6379

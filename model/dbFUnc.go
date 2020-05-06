@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"github.com/2020-LonelyPlanet-backend/miniProject/util"
 	"log"
 	"math/rand"
 	"strconv"
@@ -48,11 +49,11 @@ type latestAction struct {
 
 func CreatUser(tmpUser UserInfo) (error, int) {
 	var num int
-	var count int
+	var count []int
 	if Db.Self.Model(&UserInfo{}).Where(UserInfo{Sid: tmpUser.Sid}).Count(&num); num == 0 {
 		if err := Db.Self.Model(&UserInfo{}).Create(&tmpUser).Error; err != nil {
 			log.Println("creat user err: ", err)
-			return err, count
+			return err, 0
 		}
 		var tmpAction latestAction
 		tmpAction.Sid = tmpUser.Sid
@@ -60,23 +61,26 @@ func CreatUser(tmpUser UserInfo) (error, int) {
 		tmpAction.LatestTime = NowTimeStampStr()
 		if err := Db.Self.Model(&latestAction{}).Create(&tmpAction).Error; err != nil {
 			log.Println("creat last action err: ", err)
-			return err, count
+			return err, 0
 		}
-		count = 1
+		count = append(count, 1)
 	}else {
 		if err := Db.Self.Model(&UserInfo{}).Where(UserInfo{Sid: tmpUser.Sid}).Pluck("count", &count).Error; err != nil {
 			log.Println("find count err: ", err)
-			return err, count
+			return err, 0
 		}
-		if count == 0 {
-			count = 1
-			if err := Db.Self.Model(&UserInfo{}).Where(UserInfo{Sid:tmpUser.Sid}).Update(tmpUser).Error; err != nil {
+		fmt.Println("count", count)
+		if count[0] == 0 {
+			count[0] = 1 //1是第一次登录，先前是0
+			if err := Db.Self.Model(&UserInfo{}).Where(UserInfo{Sid:tmpUser.Sid}).Update(UserInfo{Count:1}).Error; err != nil {
 				log.Println("update count err: ", err)
 			}
+		}else {
+			count[0] = 0
 		}
 	}
 
-	return nil, count
+	return nil, count[0]
 }
 
 func FindUser(uid string) (UserInfo, error) {
@@ -203,7 +207,7 @@ type requirementInSquare struct {
 	Place         string `json:"place"`
 }
 
-func RequirementFind(type1 int, sid string, date int, timeFrom int, timeEnd int, tag []int, place []int, limit int, offset int) ([]requirementInSquare, error) {
+func RequirementFind(type1 int, sid string, date int, timeFrom int, timeEnd int, tag []int, place []int, secondTime int, limit int, offset int) ([]requirementInSquare, error) {
 
 	db := Db.Self
 
@@ -231,7 +235,8 @@ func RequirementFind(type1 int, sid string, date int, timeFrom int, timeEnd int,
 		db = db.Model(&Requirements{}).Where(Requirements{Type: type1}).Where("sender_sid != ?", sid).Where("status = 1")
 
 		if len(place) != 0 {
-			var sql2 string
+			db = db.Model(&Requirements{}).Where("place in (?)", place)
+			/*var sql2 string
 			for i, v := range place {
 				if i == 0 {
 					sql2 += "(place = " + strconv.Itoa(v)
@@ -240,10 +245,12 @@ func RequirementFind(type1 int, sid string, date int, timeFrom int, timeEnd int,
 				sql2 += " or place = " + strconv.Itoa(v)
 			}
 			sql2 += ")"
-			db = db.Model(&Requirements{}).Where(sql2)
+			db = db.Model(&Requirements{}).Where(sql2)*/
 		}
 
 		if len(tag) != 0 {
+			db = db.Model(&Requirements{}).Where("tag in (?)", tag)
+			/*
 			var sql1 string
 			for i, v := range tag {
 				if i == 0 {
@@ -254,6 +261,7 @@ func RequirementFind(type1 int, sid string, date int, timeFrom int, timeEnd int,
 			}
 			sql1 += ")"
 			db = db.Model(&Requirements{}).Where(sql1)
+			 */
 		}
 
 		/*
@@ -274,6 +282,21 @@ func RequirementFind(type1 int, sid string, date int, timeFrom int, timeEnd int,
 		if timeEnd != 0 {
 			db = db.Where(" ? - time_end >= 1", timeEnd)
 		}
+
+		//1.4更新时间
+		var secondTimeStr string
+		switch secondTime {
+		case 1:
+			secondTimeStr = util.LastWeek()
+		case 2:
+			secondTimeStr = util.LastMonth()
+		case 3:
+			secondTimeStr = ""
+		}
+		if secondTimeStr != "" {
+			db = db.Where("post_time > ?", secondTimeStr)
+		}
+
 		wg.Done()
 	}()
 
@@ -308,7 +331,7 @@ func RequirementFind(type1 int, sid string, date int, timeFrom int, timeEnd int,
 //真-->存在
 func ConfirmRequirementExist(requirements Requirements) (error, bool) {
 	var tmpRequirement []Requirements
-	if err := Db.Self.Model(&Requirements{}).Where("sender_sid = ?", requirements.SenderSid).Find(&tmpRequirement).Error; err != nil {
+	if err := Db.Self.Model(&Requirements{}).Where("sender_sid = ?", requirements.SenderSid).Where("status == ？",1).Find(&tmpRequirement).Error; err != nil {
 		fmt.Println(err)
 		return err, false
 	}
@@ -763,6 +786,7 @@ func ReminderBox(uid string, limit int, offset int) ([]ReminderInfo, error) {
 				ApplicationId:    v.ApplicationId,
 			}
 			result = append(result, tmpInfo)
+			continue
 		}
 		if v.Confirm == 3 {
 			tmpInfo := ReminderInfo{
@@ -775,6 +799,21 @@ func ReminderBox(uid string, limit int, offset int) ([]ReminderInfo, error) {
 				ApplicationId:    v.ApplicationId,
 			}
 			result = append(result, tmpInfo)
+			continue
+		}
+		if v.Confirm == 5 {
+			tmpInfo := ReminderInfo{
+				Status:           v.Confirm,
+				RequirementId:    0,
+				ConfirmTime:      timestamp2json(v.ConfirmTime),
+				Content:          v.Addition2,
+				ReceiverNickName: "管理员:" + tmpUserInfo.NickName,
+				Gender:           tmpUserInfo.Gender,
+				RedPoint:         redPoint(v.SenderReadStatus),
+				ApplicationId:    v.ApplicationId,
+			}
+			result = append(result, tmpInfo)
+			continue
 		}
 	}
 	return result, nil
@@ -878,4 +917,26 @@ func ReminderChangeStatus(applicationId int, sid string, type1 int) (error, bool
 		}
 	}
 	return nil, true
+}
+
+//1.4版本后新增功能
+func FindDraft(uid string) (error, int, Requirements) {
+	var tmpRequirement Requirements
+	var num int
+	if err := Db.Self.Model(&Requirements{}).Where("sender_sid = ?", uid).Where("status = ?", 3).Count(&num).Error; err != nil {
+		return err, num,tmpRequirement
+	}
+	if num > 0 {  //正常情况下都是1，但是如果有bug就有问题了，为此我还是选择最后一个好了
+		if err := Db.Self.Model(&Requirements{}).Where("sender_sid = ?", uid).Where("status = ?", 3).Select("title, content, place, date, time_from, time_end, place, tag, type").Last(&tmpRequirement).Error; err != nil {
+			return err, num, tmpRequirement
+		}
+	}
+	return nil, num, tmpRequirement
+}
+
+func DeleteDraft(uid string) error {
+	if err := Db.Self.Model(&Requirements{}).Where("sender_sid = ?", uid).Where("status = 3").Update(Requirements{Status: 2}).Error; err != nil {
+		return err
+	}
+	return nil
 }

@@ -35,9 +35,10 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		svcd.GET("/ram", sd.RAMCheck)
 	}
 
+	g.GET("/test", handler.Test)
 	g.POST("/lonely_planet/v1/login/", handler.UserLogin) //用户登录
 	g.Use(middleware.JwtAAuth())
-	g.GET("/test", handler.Test)
+
 
 	user := g.Group("/lonely_planet/v1/user")
 	{
@@ -51,6 +52,8 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		requirement.GET("/view/:requirement_id/", handler.ViewRequirement)          //查看特定的需求
 		requirement.DELETE("/:requirement_id/", handler.DeleteRequirement)          //删除需求
 		requirement.PUT("/new/", handler.PostRequirement)                           //发布需求
+		requirement.GET("/draft/", handler.FindDraft)                         //确认是否有草稿存在
+		requirement.PUT("/draft/", handler.DeleteDraft)       //更新草稿状态（一个就只有删除
 		requirement.GET("/history/", handler.HistoryRequirement)                    //历史需求
 		requirement.POST("/application/:requirement_id/", handler.ApplyRequirement) //申请需求
 	}
@@ -92,12 +95,14 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		comment.DELETE("/delete/:comment_id/", handler.CommentDelete)
 	}
 
-	//举报
+	//举报和反馈
 	report := g.Group("/lonely_planet/v1/report")
 	{
 		report.POST("/day/:requirement_id/", handler.DayReport) //白天的举报
 		report.POST("/night/secret/:secret_id/", handler.NightSecretReport)//黑夜的秘密举报
 		report.POST("/night/comment/:comment_id/", handler.NightNightReport)//黑夜的评论举报
+		//1.4 加入首页反馈
+		report.POST("/feedback/", handler.Feedback) //首页反馈
 	}
 
 	return g

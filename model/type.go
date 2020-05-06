@@ -50,6 +50,7 @@ type Requirements struct {
 	//ContactWayType   string `gorm:"contact_way_type" json:"contact_way_type"`
 	//ContactWay       string `gorm:"contact_way" json:"contact_way"`
 	Status int `gorm:"default:1" json:"-"`
+	IsDraft  int    `gorm:"-" json:"is_draft"`  //新增，是否是草稿
 }
 
 type NewRequirements struct {
@@ -130,4 +131,13 @@ type MyInformation struct {
 type ReportInformation struct {
 	Reason string `json:"reason"`
 	Addition string `json:"addition"`
+}
+
+type Draft struct {
+	HasDraft int `json:"has_draft"`
+	Content Requirements `json:"content"`
+}
+
+type FeedBackContent struct {
+	Content string `json:"content"`
 }

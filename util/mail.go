@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-//type1: 1 -> 白天的需求 2 -> 夜晚的吐槽
+//type1: 1 -> 白天的需求 2 -> 夜晚的吐槽  3 -> 登录页面的反馈
 //content: 被举报的内容
 //reason: 被举报的原因
 //reporter: 举报人
@@ -65,6 +65,8 @@ func convert1(num int) string {
 		return "白天的需求"
 	case 2:
 		return "黑夜的吐槽"
+	case 3:
+		return "通过首页的反馈"
 	}
 	return ""
 }

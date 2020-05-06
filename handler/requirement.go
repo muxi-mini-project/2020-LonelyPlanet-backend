@@ -183,6 +183,12 @@ func Square(c *gin.Context) {
 		tmpCondition.Date = 0
 	}
 
+	//1.4新增筛选发布时间
+	//second_time: 1:第一个选项 2:第二个选项 3:第三个选项
+	tmpSecondTime := c.Query("second_time")
+	secondTime, err := strconv.Atoi(tmpSecondTime)
+	fmt.Println(secondTime)
+
 	tmpCondition.Limit, err = strconv.Atoi(c.Query("limit"))
 	if err != nil {
 		ErrBadRequest(c, error2.ParamBadRequest)
@@ -222,7 +228,7 @@ func Square(c *gin.Context) {
 	}
 
 	uid := c.GetString("uid")
-	result, err := model.RequirementFind(tmpCondition.TypeOne, uid, tmpCondition.Date, tmpCondition.TimeFrom, tmpCondition.TimeEnd, tag, place, tmpCondition.Limit, offset)
+	result, err := model.RequirementFind(tmpCondition.TypeOne, uid, tmpCondition.Date, tmpCondition.TimeFrom, tmpCondition.TimeEnd, tag, place, secondTime, tmpCondition.Limit, offset)
 
 	if err != nil {
 		ErrServerError(c, error2.ServerError)
@@ -372,71 +378,88 @@ func detectPostRequirement(tmp model.Requirements) bool {
 // @Router /requirement/new/ [put]
 func PostRequirement(c *gin.Context) {
 	uid := c.GetString("uid")
-	err := model.NewRecode(uid, 1, 60) //新增记录
-	if err != nil {
-		ErrServerError(c, error2.ServerError)
-		return
-	}
-	num, err := model.InspectNum(uid, 1)
-	if err != nil {
-		ErrServerError(c, error2.ServerError)
-		return
-	}
-	if num > 2 {
-		ErrBadRequest(c, error2.FrequentRequests1) //暂且这样
-		return
-	}
-
-	num2, err := model.InspectNum(uid, 3)
-	if err != nil {
-		ErrServerError(c, error2.ServerError)
-		return
-	}
-
-	if num2 > 15 {
-		ErrBadRequest(c, error2.FrequentRequests2) //暂且这样
-		return
-	}
-	fmt.Println(num, num2)
 
 	var newRequirement model.Requirements
-	err = c.BindJSON(&newRequirement)
+	err := c.BindJSON(&newRequirement)
 	if err != nil {
-		log.Print("PostRequirement err")
-		fmt.Println(err)
+		log.Println("PostRequirement err", err)
 		ErrBadRequest(c, error2.BadRequest)
 		return
 	}
 
-	if !detectPostRequirement(newRequirement) {
-		ErrBadRequest(c, error2.ParamBadRequest)
-		return
+	if newRequirement.IsDraft == 2 {  //不是草稿
+		err = model.NewRecode(uid, 1, 60) //新增记录
+		if err != nil {
+			ErrServerError(c, error2.ServerError)
+			return
+		}
+		num, err := model.InspectNum(uid, 1)
+		if err != nil {
+			ErrServerError(c, error2.ServerError)
+			return
+		}
+		if num > 2 {
+			ErrBadRequest(c, error2.FrequentRequests1) //暂且这样
+			return
+		}
+
+		num2, err := model.InspectNum(uid, 3)
+		if err != nil {
+			ErrServerError(c, error2.ServerError)
+			return
+		}
+
+		if num2 > 15 {
+			ErrBadRequest(c, error2.FrequentRequests2) //暂且这样
+			return
+		}
+		//fmt.Println(num, num2)
+
+		if !detectPostRequirement(newRequirement) {
+			ErrBadRequest(c, error2.ParamBadRequest)
+			return
+		}
+
+		newRequirement.PostTime = model.NowTimeStampStr()
+		newRequirement.SenderSid = uid
+
+		if newRequirement.Date < 1000000 || newRequirement.Date > 11111111 {
+			ErrBadRequest(c, error2.ParamBadRequest)
+			return
+		}
+		tmpDate := strconv.Itoa(newRequirement.Date)
+		newRequirement.Date, err = model.BinStr2Dec(tmpDate)
+		if err != nil {
+			ErrBadRequest(c, error2.ParamBadRequest)
+			return
+		}
+		err, status := model.ConfirmRequirementExist(newRequirement)
+		if err != nil {
+			ErrServerError(c, error2.ServerError)
+			return
+		}
+		if status {
+			c.JSON(200, gin.H{
+				"msg": "requirement already exist.",
+			})
+			return
+		}
+	}else {
+		/*
+		newRequirement.PostTime = model.NowTimeStampStr()
+		newRequirement.SenderSid = uid
+		tmpDate := strconv.Itoa(newRequirement.Date)
+		newRequirement.Date, err = model.BinStr2Dec(tmpDate)
+		if err != nil {
+			ErrBadRequest(c, error2.ParamBadRequest)
+			return
+		}
+		 */
+		newRequirement.PostTime = model.NowTimeStampStr()
+		newRequirement.SenderSid = uid
+		newRequirement.Status = 3
 	}
 
-	newRequirement.PostTime = model.NowTimeStampStr()
-	newRequirement.SenderSid = uid
-
-	if newRequirement.Date < 1000000 || newRequirement.Date > 11111111 {
-		ErrBadRequest(c, error2.ParamBadRequest)
-		return
-	}
-	tmpDate := strconv.Itoa(newRequirement.Date)
-	newRequirement.Date, err = model.BinStr2Dec(tmpDate)
-	if err != nil {
-		ErrBadRequest(c, error2.ParamBadRequest)
-		return
-	}
-	err, status := model.ConfirmRequirementExist(newRequirement)
-	if err != nil {
-		ErrServerError(c, error2.ServerError)
-		return
-	}
-	if status {
-		c.JSON(200, gin.H{
-			"msg": "requirement already exist.",
-		})
-		return
-	}
 	err = model.CreatRequirement(newRequirement)
 	if err != nil {
 		ErrServerError(c, error2.ServerError)
@@ -560,5 +583,43 @@ func ApplyRequirement(c *gin.Context) {
 			"msg": "success",
 		})
 	}
+	return
+}
+
+func FindDraft(c *gin.Context) {
+	uid := c.GetString("uid")
+
+	err, num, tmpResult := model.FindDraft(uid)
+	if err != nil {
+		log.Println("find draft err: ", err)
+		ErrServerError(c, error2.ServerError)
+		return
+	}
+	var result model.Draft
+	if num == 0 {
+		result.HasDraft = 2 //没有草稿
+	}else {
+		result.HasDraft = 1
+		result.Content = tmpResult
+	}
+	c.JSON(200, gin.H{
+		"msg": "success",
+		"draft": result,
+	})
+	return
+}
+
+func DeleteDraft(c *gin.Context) {
+	uid := c.GetString("uid")
+
+	err := model.DeleteDraft(uid)
+	if err != nil {
+		log.Println("delete draft err: ", err)
+		ErrServerError(c, error2.ServerError)
+		return
+	}
+	c.JSON(200, gin.H{
+		"msg": "success",
+	})
 	return
 }

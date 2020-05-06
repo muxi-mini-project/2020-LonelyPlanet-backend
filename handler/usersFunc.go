@@ -80,7 +80,7 @@ func Test(c *gin.Context) {
 	//fmt.Println(uid)
 	//c.SetCookie("1", "2", 3600, "/", "l", false, true)
 	c.JSON(200, gin.H{
-		"msg": time.Now(),
+		"msg": "<span style='color:green'>aaa</span>",
 	})
 	return
 }
