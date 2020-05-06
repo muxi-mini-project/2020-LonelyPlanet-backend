@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/2020-LonelyPlanet-backend/miniProject/model"
+	error2 "github.com/2020-LonelyPlanet-backend/miniProject/pkg/error"
 	"github.com/gin-gonic/gin"
 	"log"
 	"strconv"
@@ -9,6 +10,21 @@ import (
 
 func DebunksCreate(c *gin.Context) {
 	uid := c.GetString("uid")
+
+	black, err := model.ConfirmBlackList(uid)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": "Bad Request!",
+		})
+		return
+	}
+	if black {
+		c.JSON(401, gin.H{
+			"message": "此用户在黑名单中",
+		})
+		return
+	}
+
 	var data model.DebunkInfo
 	if err := c.BindJSON(&data); err != nil {
 		log.Println(err)

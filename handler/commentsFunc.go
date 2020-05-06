@@ -9,6 +9,22 @@ import (
 )
 
 func CommentCreate(c *gin.Context) {
+	uid := c.GetString("uid")
+
+	black, err := model.ConfirmBlackList(uid)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": "Bad Request!",
+		})
+		return
+	}
+	if black {
+		c.JSON(401, gin.H{
+			"message": "此用户在黑名单中",
+		})
+		return
+	}
+
 	var data model.Night_comment
 	secretid, _ := strconv.Atoi(c.Query("secretId"))
 	receiverid := c.Query("receiver_sid")
