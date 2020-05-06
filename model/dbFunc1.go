@@ -68,7 +68,7 @@ func GetCommentHistory(history []Night_comment) (comment []Comment) {
 
 func SquareDebunk(sid string, page int, limit int) (secret Debunk, err error) {
 	var i,n int
-	var num int
+	//var num int
 	var tmpRecord latestAction
 	var secretid []int
 
@@ -84,7 +84,7 @@ func SquareDebunk(sid string, page int, limit int) (secret Debunk, err error) {
 	}
 
 	if i >= page * limit {
-		if err = Db.Self.Model(&latestAction{}).Where("sid = ?", sid).Find(&tmpRecord).Error; err != nil {
+		if err = Db.Self.Model(&latestAction{}).Where("sid = ?", sid).First(&tmpRecord).Error; err != nil {
 			log.Println(err)
 			return
 		}
