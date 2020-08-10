@@ -2,7 +2,6 @@ package handler
 
 import (
 	"github.com/2020-LonelyPlanet-backend/miniProject/model"
-	error2 "github.com/2020-LonelyPlanet-backend/miniProject/pkg/error"
 	"github.com/gin-gonic/gin"
 	"log"
 	"strconv"

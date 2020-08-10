@@ -34,4 +34,3 @@ func (rdb *Redis) Close() error {
 	}
 	return nil
 }
-

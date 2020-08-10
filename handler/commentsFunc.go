@@ -45,7 +45,7 @@ func CommentCreate(c *gin.Context) {
 	data.SecretId = secretid
 	data.CommentTime = model.NowTime()
 	fmt.Println(data)
-	err := model.CreateComment(data)
+	err = model.CreateComment(data)
 	if err != nil {
 		log.Println(err)
 		c.JSON(400, gin.H{

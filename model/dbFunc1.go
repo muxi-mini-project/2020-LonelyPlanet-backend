@@ -67,7 +67,7 @@ func GetCommentHistory(history []Night_comment) (comment []Comment) {
 }
 
 func SquareDebunk(sid string, page int, limit int) (secret Debunk, err error) {
-	var i,n int
+	var i, n int
 	//var num int
 	var tmpRecord latestAction
 	var secretid []int
@@ -83,7 +83,7 @@ func SquareDebunk(sid string, page int, limit int) (secret Debunk, err error) {
 		err = RecordAction(sid, tmpRecord.RandNum, tmpRecord.LatestTime)
 	}
 
-	if i >= page * limit {
+	if i >= page*limit {
 		if err = Db.Self.Model(&latestAction{}).Where("sid = ?", sid).First(&tmpRecord).Error; err != nil {
 			log.Println(err)
 			return
@@ -138,7 +138,7 @@ func DeleteComment(commentid int) (err error) {
 	return
 }
 
-func GetComment(commentid int) (comment Night_comment, err error)  {
+func GetComment(commentid int) (comment Night_comment, err error) {
 	if err = Db.Self.Model(&Night_comment{}).Where(Night_comment{CommentId: commentid}).Find(&comment).Error; err != nil {
 		log.Println(err)
 	}

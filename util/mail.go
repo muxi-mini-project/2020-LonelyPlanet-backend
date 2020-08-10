@@ -13,7 +13,7 @@ import (
 //reporter: 举报人
 //person: 被举报人
 //addition: 附加信息
-func SendMail(type1 int, content , reason , reporter, person, addition string) error {
+func SendMail(type1 int, content, reason, reporter, person, addition string) error {
 
 	mailConn := map[string]string{
 		"user": "3243837480@qq.com",
@@ -30,27 +30,34 @@ func SendMail(type1 int, content , reason , reporter, person, addition string) e
 
 	bt.WriteString("主类别: ")
 	tmp := convert1(type1)
-	bt.WriteString(tmp); bt.WriteString("<br><br>")
+	bt.WriteString(tmp)
+	bt.WriteString("<br><br>")
 	bt.WriteString("举报人: ")
-	bt.WriteString(reporter); bt.WriteString("<br><br>")
+	bt.WriteString(reporter)
+	bt.WriteString("<br><br>")
 	bt.WriteString("被举报人: ")
-	bt.WriteString(person); bt.WriteString("<br><br>")
+	bt.WriteString(person)
+	bt.WriteString("<br><br>")
 	bt.WriteString("原因: ")
 	tmp = convert2(reason)
-	bt.WriteString(tmp); bt.WriteString("<br><br>")
+	bt.WriteString(tmp)
+	bt.WriteString("<br><br>")
 	bt.WriteString("附加信息: ")
-	bt.WriteString(addition); bt.WriteString("<br><br>")
+	bt.WriteString(addition)
+	bt.WriteString("<br><br>")
 	bt.WriteString("被举报内容: ")
-	bt.WriteString(content); bt.WriteString("<br><br>")
+	bt.WriteString(content)
+	bt.WriteString("<br><br>")
 	bt.WriteString("举报时间: ")
-	bt.WriteString(time.Now().String()); bt.WriteString("<br><br>")
+	bt.WriteString(time.Now().String())
+	bt.WriteString("<br><br>")
 	bt.WriteString(`<a href="https://imgchr.com/i/JVB0mD"><img src="https://s1.ax1x.com/2020/04/17/JVB0mD.th.jpg" alt="JVB0mD.jpg" border="0" /></a>`)
 	body := bt.String()
 	//fmt.Println(body)
 	m.SetHeader("From", m.FormatAddress(mailConn["user"], "孤独星球"))
-	m.SetHeader("To", "3243837480@qq.com")    //发送给多个用户
-	m.SetHeader("Subject", "新举报提醒") //设置邮件主题
-	m.SetBody("text/html", body)    //设置邮件正文
+	m.SetHeader("To", "3243837480@qq.com") //发送给多个用户
+	m.SetHeader("Subject", "新举报提醒")        //设置邮件主题
+	m.SetBody("text/html", body)           //设置邮件正文
 
 	d := gomail.NewDialer(mailConn["host"], port, mailConn["user"], mailConn["pass"])
 

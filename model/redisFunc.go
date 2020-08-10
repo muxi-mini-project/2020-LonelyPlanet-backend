@@ -16,13 +16,17 @@ func InspectNum(userId string, type1 int) (int, error) {
 	bt.WriteString(userId)
 	switch type1 {
 	case 1:
-		bt.WriteString("daySingle"); bt.WriteString("*")
+		bt.WriteString("daySingle")
+		bt.WriteString("*")
 	case 2:
-		bt.WriteString("nightSingle"); bt.WriteString("*")
+		bt.WriteString("nightSingle")
+		bt.WriteString("*")
 	case 3:
-		bt.WriteString("dayTotal"); bt.WriteString(now())
+		bt.WriteString("dayTotal")
+		bt.WriteString(now())
 	case 4:
-		bt.WriteString("nightTotal"); bt.WriteString(now())
+		bt.WriteString("nightTotal")
+		bt.WriteString(now())
 	}
 	tmp := bt.String()
 	newRedis := RedisDb.Self.Get()
@@ -30,7 +34,7 @@ func InspectNum(userId string, type1 int) (int, error) {
 	if type1 == 1 || type1 == 2 {
 		tmp2, err := redis.Strings(newRedis.Do("keys", tmp))
 		if err != nil {
-			log.Println("keys",err)
+			log.Println("keys", err)
 			return result, err
 		}
 		result = len(tmp2)
@@ -38,7 +42,7 @@ func InspectNum(userId string, type1 int) (int, error) {
 	}
 	exists, err := redis.Bool(newRedis.Do("exists", tmp))
 	if err != nil {
-		log.Println("exits",err)
+		log.Println("exits", err)
 		return result, err
 	}
 	result = 0
@@ -62,9 +66,15 @@ func NewRecode(userId string, type1 int, sec int) error {
 	bt2.WriteString(userId)
 	switch type1 {
 	case 1:
-		bt.WriteString("daySingle"); bt.WriteString(nowShort()); bt2.WriteString("dayTotal"); bt2.WriteString(now())
+		bt.WriteString("daySingle")
+		bt.WriteString(nowShort())
+		bt2.WriteString("dayTotal")
+		bt2.WriteString(now())
 	case 2:
-		bt.WriteString("nightSingle"); bt.WriteString(nowShort()); bt2.WriteString("nightTotal"); bt2.WriteString(now())
+		bt.WriteString("nightSingle")
+		bt.WriteString(nowShort())
+		bt2.WriteString("nightTotal")
+		bt2.WriteString(now())
 	}
 	tmp := bt.String()
 	tmp2 := bt2.String()
@@ -72,28 +82,28 @@ func NewRecode(userId string, type1 int, sec int) error {
 	defer newRedis.Close()
 	_, err := newRedis.Do("set", tmp, 1)
 	if err != nil {
-		log.Println("newrecode1",err)
+		log.Println("newrecode1", err)
 		return err
 	}
 	_, err = newRedis.Do("expire", tmp, sec)
 	if err != nil {
-		log.Println("newrecode2",err)
+		log.Println("newrecode2", err)
 		return err
 	}
 	exists, err := redis.Bool(newRedis.Do("exists", tmp2))
 	if err != nil {
-		log.Println("newrecode3",err)
+		log.Println("newrecode3", err)
 		return err
 	}
 	_, err = newRedis.Do("incr", tmp2)
 	if err != nil {
-		log.Println("newrecode4",err)
+		log.Println("newrecode4", err)
 		return err
 	}
 	if !exists {
 		_, err = newRedis.Do("expireat", tmp2, nextDay())
 		if err != nil {
-			log.Println("newrecode5",err)
+			log.Println("newrecode5", err)
 			return err
 		}
 	}
@@ -101,9 +111,8 @@ func NewRecode(userId string, type1 int, sec int) error {
 	return nil
 }
 
-
 func nowShort() string {
-	tmp := strconv.FormatInt(time.Now().Unix(),10)
+	tmp := strconv.FormatInt(time.Now().Unix(), 10)
 	return tmp[6:]
 }
 

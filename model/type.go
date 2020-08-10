@@ -49,8 +49,8 @@ type Requirements struct {
 	Type  int `gorm:"type" json:"type"`
 	//ContactWayType   string `gorm:"contact_way_type" json:"contact_way_type"`
 	//ContactWay       string `gorm:"contact_way" json:"contact_way"`
-	Status int `gorm:"default:1" json:"-"`
-	IsDraft  int    `gorm:"-" json:"is_draft"`  //新增，是否是草稿
+	Status  int `gorm:"default:1" json:"-"`
+	IsDraft int `gorm:"-" json:"is_draft"` //新增，是否是草稿
 }
 
 type NewRequirements struct {
@@ -129,13 +129,13 @@ type MyInformation struct {
 }
 
 type ReportInformation struct {
-	Reason string `json:"reason"`
+	Reason   string `json:"reason"`
 	Addition string `json:"addition"`
 }
 
 type Draft struct {
-	HasDraft int `json:"has_draft"`
-	Content Requirements `json:"content"`
+	HasDraft int          `json:"has_draft"`
+	Content  Requirements `json:"content"`
 }
 
 type FeedBackContent struct {
@@ -143,8 +143,8 @@ type FeedBackContent struct {
 }
 
 type BlackList struct {
-	Sid string `gorm:"sid"`
+	Sid    string `gorm:"sid"`
 	Reason string `gorm:"reason"`
 	Expiry string `gorm:"expiry"`
-	From string `gorm:"from"`
+	From   string `gorm:"from"`
 }

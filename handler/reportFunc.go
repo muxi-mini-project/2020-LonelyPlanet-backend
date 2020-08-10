@@ -42,7 +42,7 @@ func Feedback(c *gin.Context) {
 	//uid := c.GetString("uid")
 
 	var content model.FeedBackContent
-	err := c.BindJSON(& content)
+	err := c.BindJSON(&content)
 	if err != nil {
 		log.Println("Feedback err", err)
 		ErrBadRequest(c, error2.BadRequest)

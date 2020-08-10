@@ -4,10 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	//errno "github.com/asynccnu/data_service/pkg"
-
-	//"github.com/PuerkitoBio/goquery"
-	"github.com/asynccnu/data_service/pkg/errno"
 	"golang.org/x/net/publicsuffix"
 	"io/ioutil"
 	"log"
@@ -235,7 +231,7 @@ func makeAccountRequest(sid, password string, params *accountReqeustParams, clie
 	matched := reg.MatchString(string(body))
 	if !matched {
 		log.Println("Wrong sid or pwd")
-		return errno.ErrAuthFailed
+		return errors.New("Wrong sid or pwd.")
 	}
 
 	log.Println("Login successfully")

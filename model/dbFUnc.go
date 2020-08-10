@@ -64,7 +64,7 @@ func CreatUser(tmpUser UserInfo) (error, int) {
 			return err, 0
 		}
 		count = append(count, 1)
-	}else {
+	} else {
 		if err := Db.Self.Model(&UserInfo{}).Where(UserInfo{Sid: tmpUser.Sid}).Pluck("count", &count).Error; err != nil {
 			log.Println("find count err: ", err)
 			return err, 0
@@ -72,10 +72,10 @@ func CreatUser(tmpUser UserInfo) (error, int) {
 		fmt.Println("count", count)
 		if count[0] == 0 {
 			count[0] = 1 //1是第一次登录，先前是0
-			if err := Db.Self.Model(&UserInfo{}).Where(UserInfo{Sid:tmpUser.Sid}).Update(UserInfo{Count:1}).Error; err != nil {
+			if err := Db.Self.Model(&UserInfo{}).Where(UserInfo{Sid: tmpUser.Sid}).Update(UserInfo{Count: 1}).Error; err != nil {
 				log.Println("update count err: ", err)
 			}
-		}else {
+		} else {
 			count[0] = 0
 		}
 	}
@@ -251,17 +251,17 @@ func RequirementFind(type1 int, sid string, date int, timeFrom int, timeEnd int,
 		if len(tag) != 0 {
 			db = db.Model(&Requirements{}).Where("tag in (?)", tag)
 			/*
-			var sql1 string
-			for i, v := range tag {
-				if i == 0 {
-					sql1 += "(tag = " + strconv.Itoa(v)
-					continue
+				var sql1 string
+				for i, v := range tag {
+					if i == 0 {
+						sql1 += "(tag = " + strconv.Itoa(v)
+						continue
+					}
+					sql1 += " or tag = " + strconv.Itoa(v)
 				}
-				sql1 += " or tag = " + strconv.Itoa(v)
-			}
-			sql1 += ")"
-			db = db.Model(&Requirements{}).Where(sql1)
-			 */
+				sql1 += ")"
+				db = db.Model(&Requirements{}).Where(sql1)
+			*/
 		}
 
 		/*
@@ -331,7 +331,7 @@ func RequirementFind(type1 int, sid string, date int, timeFrom int, timeEnd int,
 //真-->存在
 func ConfirmRequirementExist(requirements Requirements) (error, bool) {
 	var tmpRequirement []Requirements
-	if err := Db.Self.Model(&Requirements{}).Where("sender_sid = ?", requirements.SenderSid).Where("status = ?",1).Find(&tmpRequirement).Error; err != nil {
+	if err := Db.Self.Model(&Requirements{}).Where("sender_sid = ?", requirements.SenderSid).Where("status = ?", 1).Find(&tmpRequirement).Error; err != nil {
 		fmt.Println(err)
 		return err, false
 	}
@@ -924,9 +924,9 @@ func FindDraft(uid string) (error, int, Requirements) {
 	var tmpRequirement Requirements
 	var num int
 	if err := Db.Self.Model(&Requirements{}).Where("sender_sid = ?", uid).Where("status = ?", 3).Count(&num).Error; err != nil {
-		return err, num,tmpRequirement
+		return err, num, tmpRequirement
 	}
-	if num > 0 {  //正常情况下都是1，但是如果有bug就有问题了，为此我还是选择最后一个好了
+	if num > 0 { //正常情况下都是1，但是如果有bug就有问题了，为此我还是选择最后一个好了
 		if err := Db.Self.Model(&Requirements{}).Where("sender_sid = ?", uid).Where("status = ?", 3).Select("title, content, place, date, time_from, time_end, place, tag, type").Last(&tmpRequirement).Error; err != nil {
 			return err, num, tmpRequirement
 		}
@@ -957,7 +957,7 @@ func ConfirmBlackList(uid string) (bool, error) {
 		}
 		now := NowTimeStampStr()
 		fmt.Println()
-		if tmp.Expiry < now  {
+		if tmp.Expiry < now {
 			return false, nil
 		}
 		return true, nil

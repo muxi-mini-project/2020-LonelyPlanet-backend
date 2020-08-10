@@ -4,11 +4,11 @@ import (
 	"github.com/2020-LonelyPlanet-backend/miniProject/model"
 	"github.com/2020-LonelyPlanet-backend/miniProject/util"
 	"github.com/gin-gonic/gin"
-	"strconv"
 	"log"
+	"strconv"
 )
 
-func NightSecretReport(c *gin.Context)  {
+func NightSecretReport(c *gin.Context) {
 	uid := c.GetString("uid")
 	secretid, _ := strconv.Atoi(c.Query("secretId"))
 
@@ -42,7 +42,7 @@ func NightSecretReport(c *gin.Context)  {
 	})
 }
 
-func NightNightReport(c *gin.Context)  {
+func NightNightReport(c *gin.Context) {
 	uid := c.GetString("uid")
 	commentid, _ := strconv.Atoi(c.Query("commentId"))
 

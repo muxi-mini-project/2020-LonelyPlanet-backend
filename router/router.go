@@ -39,10 +39,9 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 
 	g.POST("/lonely_planet/v1/login/", handler.UserLogin) //用户登录
 	//1.4 加入首页反馈
-	g.POST("/lonely_planet/v1/feedback/", handler.Feedback)  //首页反馈
+	g.POST("/lonely_planet/v1/feedback/", handler.Feedback) //首页反馈
 
 	g.Use(middleware.JwtAAuth())
-
 
 	user := g.Group("/lonely_planet/v1/user")
 	{
@@ -56,16 +55,16 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		requirement.GET("/view/:requirement_id/", handler.ViewRequirement)          //查看特定的需求
 		requirement.DELETE("/:requirement_id/", handler.DeleteRequirement)          //删除需求
 		requirement.PUT("/new/", handler.PostRequirement)                           //发布需求
-		requirement.GET("/draft/", handler.FindDraft)                         //确认是否有草稿存在
-		requirement.PUT("/draft/", handler.DeleteDraft)       //更新草稿状态（一个就只有删除
+		requirement.GET("/draft/", handler.FindDraft)                               //确认是否有草稿存在
+		requirement.PUT("/draft/", handler.DeleteDraft)                             //更新草稿状态（一个就只有删除
 		requirement.GET("/history/", handler.HistoryRequirement)                    //历史需求
 		requirement.POST("/application/:requirement_id/", handler.ApplyRequirement) //申请需求
 	}
 
 	remind := g.Group("/lonely_planet/v1/remind")
 	{
-		remind.GET("/day/remindbox/status/", handler.DayRemindExistence)       //查询是否显示小红点
-		remind.GET("/day/remindbox/", handler.ReminderBox)                     //点击回复提醒
+		remind.GET("/day/remindbox/status/", handler.DayRemindExistence)                 //查询是否显示小红点
+		remind.GET("/day/remindbox/", handler.ReminderBox)                               //点击回复提醒
 		remind.POST("/day/remindbox/done/:application_id/", handler.UpdateRemindStatus1) //更新申请人阅读状态
 		//Router.GET("/remind/night/remindbox/",handler.NightInformationExistence)
 
@@ -102,9 +101,9 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	//举报和反馈
 	report := g.Group("/lonely_planet/v1/report")
 	{
-		report.POST("/day/:requirement_id/", handler.DayReport) //白天的举报
-		report.POST("/night/secret/:secret_id/", handler.NightSecretReport)//黑夜的秘密举报
-		report.POST("/night/comment/:comment_id/", handler.NightNightReport)//黑夜的评论举报
+		report.POST("/day/:requirement_id/", handler.DayReport)              //白天的举报
+		report.POST("/night/secret/:secret_id/", handler.NightSecretReport)  //黑夜的秘密举报
+		report.POST("/night/comment/:comment_id/", handler.NightNightReport) //黑夜的评论举报
 		//report.POST("/feedback/", handler.Feedback)
 	}
 

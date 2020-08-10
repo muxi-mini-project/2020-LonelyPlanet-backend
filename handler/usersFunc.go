@@ -43,6 +43,11 @@ func UserLogin(c *gin.Context) {
 		return
 	}
 
+	if tmpUser.Errmsg != "ok" {
+		ErrUnauthorized(c, error2.LoginAgain)
+		return
+	}
+
 	//fmt.Println(tmpUser)
 
 	user := model.UserInfo{
@@ -57,7 +62,9 @@ func UserLogin(c *gin.Context) {
 
 	err, count := model.CreatUser(user) //写入用户数据到数据库
 	if err != nil {
-		ErrServerError(c, error2.ServerError)
+		c.JSON(200, gin.H{
+			"msg":   "try_again",
+		})
 		return
 	}
 

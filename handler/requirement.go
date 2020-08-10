@@ -397,7 +397,7 @@ func PostRequirement(c *gin.Context) {
 		return
 	}
 
-	if newRequirement.IsDraft != 1 {  //不是草稿
+	if newRequirement.IsDraft != 1 { //不是草稿
 		err = model.NewRecode(uid, 1, 60) //新增记录
 		if err != nil {
 			ErrServerError(c, error2.ServerError)
@@ -454,17 +454,17 @@ func PostRequirement(c *gin.Context) {
 			})
 			return
 		}
-	}else {
+	} else {
 		/*
-		newRequirement.PostTime = model.NowTimeStampStr()
-		newRequirement.SenderSid = uid
-		tmpDate := strconv.Itoa(newRequirement.Date)
-		newRequirement.Date, err = model.BinStr2Dec(tmpDate)
-		if err != nil {
-			ErrBadRequest(c, error2.ParamBadRequest)
-			return
-		}
-		 */
+			newRequirement.PostTime = model.NowTimeStampStr()
+			newRequirement.SenderSid = uid
+			tmpDate := strconv.Itoa(newRequirement.Date)
+			newRequirement.Date, err = model.BinStr2Dec(tmpDate)
+			if err != nil {
+				ErrBadRequest(c, error2.ParamBadRequest)
+				return
+			}
+		*/
 		newRequirement.PostTime = model.NowTimeStampStr()
 		newRequirement.SenderSid = uid
 		newRequirement.Status = 3
@@ -476,12 +476,12 @@ func PostRequirement(c *gin.Context) {
 		return
 	}
 	/*
-	err = model.NewRecode(uid, 1) //新增记录
-	if err != nil {
-		ErrServerError(c, error2.ServerError)
-		return
-	}
-	 */
+		err = model.NewRecode(uid, 1) //新增记录
+		if err != nil {
+			ErrServerError(c, error2.ServerError)
+			return
+		}
+	*/
 	c.JSON(200, gin.H{
 		"msg": "success",
 	})
@@ -619,12 +619,12 @@ func FindDraft(c *gin.Context) {
 	var result model.Draft
 	if num == 0 {
 		result.HasDraft = 2 //没有草稿
-	}else {
+	} else {
 		result.HasDraft = 1
 		result.Content = tmpResult
 	}
 	c.JSON(200, gin.H{
-		"msg": "success",
+		"msg":   "success",
 		"draft": result,
 	})
 	return
